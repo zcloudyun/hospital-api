@@ -17,8 +17,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 
-// TODO
-// @Component
+// TODO 用来生成签名字符串
+ @Component
 public class TrtcUtil {
 
     @Value("${tencent.trtc.appId}")

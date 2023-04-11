@@ -3,5 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.DoctorPrescriptionDao">
-
+  <insert id="insert" parameterType="com.example.hospital.api.db.Entity.DoctorPrescriptionEntity">
+      insert into doctor_prescription (uuid,patient_card_id,diagnosis,sub_dept_id,doctor_id,registration_id,rp)
+      values (#{uuid},#{patientCardId},#{diagnosis},#{subDeptId},#{doctorId},#{registrationId},#{rp})
+  </insert>
+    <select id="searchPrescriptionByRegistrationId" parameterType="Map" resultType="HashMap">
+        select dp.uuid as uuid,
+               ds.name as deptSub,
+               dp.diagnosis as diagnosis,
+               dp.rp as rp,
+               pc.name as patientName,
+               pc.sex as patientSex,
+               CAST(pc.birthday as char) as patientBirthday,
+               d.name as doctorNme
+        from doctor_prescription dp join doctor d on d.id=dp.doctor_id
+        join patient_user_info_card pc on pc.id=dp.patient_card_id
+        join medical_dept_sub ds on ds.id=dp.sub_dept_id
+        where dp.registration_id=#{registrationId}
+        <if test="userId!=null">
+            AND pc.user_id=#{userId}
+        </if>
+    </select>
 </mapper>

@@ -3,5 +3,19 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.VideoDiagnoseDao">
-    
+<!--    保存挂号记录-->
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.VideoDiagnoseEntity">
+        insert into video_diagnose(patient_card_id,doctor_id,out_trade_no,
+                                   amount,payment_status,prepay_id,transation_id,expect_start,
+                                   expect_end,real_start,real_end,status,create_time)
+        values (#{patientCardId},#{doctorId},#{outTradeNo},
+                #{amount},1,#{prepayId},NULL,STR_TO_DATE('${expectStart}','YYYY-MM-DD'),
+                STR_TO_DATE('${expectEnd}','YYYY-MM-DD'),NULL,NULL,1,NOW())
+    </insert>
+<!--    根据流水号查询主键-->
+    <select id="searchByOutTradeNo" parameterType="String" resultType="HashMap">
+        select id,doctor_id as doctorId
+        from video_diagnose
+        where out_trade_no=#{outTradeNo}
+    </select>
 </mapper>

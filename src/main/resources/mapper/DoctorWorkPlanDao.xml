@@ -3,5 +3,75 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.DoctorWorkPlanDao">
-    
+    <select id="searchWorkPlanInRange" parameterType="Map" resultType="HashMap">
+        select md.name as deptName,
+               ds.id as deptSubId,
+               ds.name as deptSubName,
+               d.name as doctorName,
+               wp.id as workPlanId,
+               wp.date as date
+        from doctor_work_plan wp
+        join doctor d on wp.doctor_id =d.id
+        join medical_dept_sub ds on ds.id=wp.dept_sub_id
+        join medical_dept md on ds.dept_id=md.id
+        where wp.date between STR_TO_DATE('${startDate}','%Y-%m-%d') and STR_TO_DATE('${endDate}','%Y-%m-%d')
+        <if test="deptId !=null">
+          and ds.dept_id =${deptId}
+        </if>
+        <if test="doctorName !=null">
+           and d.name like '%${doctorName}%'
+        </if>
+        order by ds.id,wp.date
+    </select>
+    <select id="searchId" parameterType="Map" resultType="Integer">
+        select id from doctor_work_plan
+        where doctor_id=${doctorId} and dept_sub_id=${deptSubId}
+         and date=STR_TO_DATE('${date}','%Y-%m-%d')
+         limit 1 offset 0
+    </select>
+
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.DoctorWorkPlanEntity">
+        insert into doctor_work_plan(doctor_id,dept_sub_id,date,maximum,num)
+        values(${doctorId},${deptSubId},STR_TO_DATE('${date}','%Y-%m-%d'), ${maximum},0)
+    </insert>
+    <update id="updateMaximum" parameterType="Map">
+        update doctor_work_plan set maximum=${maximum}
+        where id=${workPlanId}
+    </update>
+    <select id="searchNumById" parameterType="int" resultType="Integer">
+        select num from doctor_work_plan where id=${id}
+    </select>
+    <delete id="deleteById" parameterType="int">
+        delete from doctor_work_plan where id=${id}
+    </delete>
+    <select id="searchCanRegisterInDateRange" parameterType="Map" resultType="String">
+        select distinct date from doctor_work_plan
+        where dept_sub_id=${deptSubId} and date between STR_TO_DATE('${startDate}','%Y-%m-%d') and STR_TO_DATE('${endDate}','%Y-%m-%d')
+    </select>
+    <select id="searchDeptSubDoctorPlanInDay" parameterType="Map" resultType="HashMap">
+        select d.id as id,
+               d.name as name,
+               d.photo as photo,
+               d.job as job,
+               d.description as description,
+               p.num as num,
+               p.maximum as maximum,
+               CAST(dp.price_1 as char) as price
+        from doctor_work_plan p
+        join doctor d on p.doctor_id=d.id
+        join doctor_price dp on p.doctor_id=dp.doctor_id
+        where p.dept_sub_id=#{deptSubId}
+              and p.date=STR_TO_DATE('${date}','%Y-%m-%d')
+    </select>
+    <update id="updateNumById" parameterType="Map">
+        update doctor_work_plan set num=num+#{n} where id=#{id}
+    </update>
+    <update id="releaseNumByOutTradeNo" parameterType="String">
+        update doctor_work_plan set num=num-1
+        where id in(
+            select p.id from medical_registration r
+            join doctor_work_plan p on r.work_plan_id=p.id
+            where r.out_trade_no=#{outTradeNo}
+        )
+    </update>
 </mapper>

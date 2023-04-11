@@ -12,7 +12,6 @@ server:
   port: 8092
   servlet:
     context-path: /hospital-api
-
 spring:
   datasource:
     driver-class-name: org.apache.phoenix.queryserver.client.Driver
@@ -32,20 +31,34 @@ spring:
       max-file-size: 20MB
       #http请求不能超过20M
       max-request-size: 20MB
-
   redis:
     database: 0
-    host: 47.108.146.141
+    host: 127.0.0.1
     port: 6379
     jedis:
       pool:
+#        连接池最大连接数
         max-active: 1000
+#        连接池最大阻塞等待时间
         max-wait: -1ms
+#        连接池最大空闲连接
         max-idle: 16
+#        最小空闲连接
         min-idle: 8
 
   quartz:
     job-store-type: memory
+  rabbitmq:
+    host: 47.108.146.141
+    port: 15672
+    username: admin
+    password: admin
+    #返回JSON的全局时间格式
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
+  application:
+    name: hospital-api
 
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
@@ -65,7 +78,7 @@ sa-token:
   #http请求头中token的名称
   token-name: token
   #token有效期，单位s，默认30天，-1代表永不过期
-  timeout: 2592000
+  timeout: 720000
   #token临时有效期
   activity-timeout: -1
   #是否允许同一账号并发登录
@@ -78,33 +91,35 @@ sa-token:
   isReadCookie: false
 
 
-#wechat:
-#  app-id: 你的微信小程序APPID
-#  app-secret: 你的微信小程序密钥
+wechat:
+  app-id: wx03e940d81e8353a6
+  app-secret: 946ad0229f335a26f3a9c5390cecc1ef
 #  pay:
 #    v3:
 #      patient-wx-api:
-#        app-id: 你的微信小程序APPID
-#        app-v3-secret: 微信商户平台密钥
-#        mch-id: 微信商户平台ID
-#        domain: http://内网穿透的外网IP地址和端口/hospital-wx-api
+#        app-id: wx03e940d81e8353a6
+##        app-v3-secret: 微信商户平台密钥
+##        mch-id: 微信商户平台ID
+##        domain: http://内网穿透的外网IP地址和端口/hospital-wx-api
 #        cert-path: apiclient_cert.p12
 
-#tencent:
-#  cloud:
-#    appId: 你的腾讯云APPID
-#    secretId: 你的腾讯云secretId
-#    secretKey: 你的腾讯云secretKey
-#    face:
-#      groupName: hospital
-#      region: ap-beijing
-#  trtc:
-#    appId: TRTC的appId
-#    secretKey: TRTC的secretKey
-#    expire: 86400
+#配置TRTC
+tencent:
+  cloud:
+    appId: 1308174688
+    secretId: AKIDVTFn8F8pIXZMvGUUHrDMG1YqwoUAcrrc
+    secretKey: c1DBwQp21pyzoRr21qW1NZWFjIgvyraC
+    face:
+      groupName: hospital
+      region: ap-chongqing
+  trtc:
+    appId: 1400799601
+    secretKey: 33703ed1aba792643f11846de7165924c38155ba923bbd99250b80df49918b81
+    expire: 86400
 
 minio:
   endpoint: http://47.108.146.141:9000
-  access-key: root
-  secret-key: abc123456
+  access-key: admin
+  secret-key: minio@zy.com
+
 

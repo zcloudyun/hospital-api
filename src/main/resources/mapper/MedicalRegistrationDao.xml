@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.MedicalRegistrationDao">
+<!--    检测当前是否已经挂号三次-->
+    <select id="searchRegistrationCountInToday" parameterType="Map" resultType="long">
+      select count(*)
+      from medical_registration r
+      join patient_user_info_card c on r.patient_card_id=c.id
+      where c.user_id=#{userId}
+            and r.create_time=STR_TO_DATE('${today}','%Y-%m-%d')
+    </select>
+<!--    检查当前是否已经挂过该门诊的号-->
+    <select id="hasRegisterRecordInDay" parameterType="Map" resultType="Integer">
+        select r.id
+        from medical_registration r
+        join patient_user_info_card c on r.patient_card_id=c.id
+        where c.user_id=#{userId}
+              and date=STR_TO_DATE('${date}','%Y-%m-%d')
+              and dept_sub_id=#{deptSubId}
+              and payment_status !=3
+        LIMIT 1
+    </select>
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalRegistrationEntity">
+        insert into medical_registration(patient_card_id,work_plan_id,
+                                         doctor_schedule_id,doctor_id,
+                                         dept_sub_id,date,slot,amount,
+                                         out_trade_no,prepay_id,
+                                         payment_status,create_time,status)
+        values (#{patientCardId},#{workPlanId},#{doctorScheduleId},#{doctorId},#{deptSubId},
+                STR_TO_DATE('${date}','%Y-%m-%d'),#{slot},#{amount},#{outTradeNo},#{prepayId},1,NOW(),1)
+    </insert>
+    <update id="discardPayment" parameterType="String">
+        update medical_registration set payment_status=4
+        where out_trade_no=#{outTradeNo} and payment_status=1
+    </update>
+    <select id="searchWorkPlanIdAndScheduleId" parameterType="String" resultType="HashMap">
+        select doctor_schedule_id as doctorScheduleId,work_plan_id as workPlanId
+        from medical_rigistration where out_trade_no=#{outTradeNo}
+    </select>
+    <update id="updatePayment" parameterType="Map" >
+        update medical_registration set transaction_id=#{transactionId},payment_status=#{paymentStatus}
+        where out_trade_no=#{outTradeNo}
+    </update>
+    <select id="searchPaymentResult" parameterType="String" resultType="String">
+        select transaction_id from medical_registration where out_trade_no =#{outTardeNo}
+    </select>
+    <select id="searchRegistrationInfo" parameterType="Map" resultType="HashMap">
+        select r.id as id,
+               r.date as date,
+               r.slot as slot,
+               c.name as patientName ,
+               s.name as subDeptName,
+               d.name as doctorName,
+               s.location as location,
+               d.job as job,
+               r.out_trade_no as outTradeNo,
+               CAST(r.amount as char) as amount,
+               r.payment_status as paymentStatus,
+               dp.id as prescriptionId
+        from medical_registration r join patient_user_info_card c on r.patient_card_id=c.id
+        join medical_dept_sub s on r.dept_sub_id=s.id
+        join doctor d on d.id=r.doctor_id
+        join doctor_prescription dp on dp.registration_id=r.ide
+        where r.id=#{id} and c.user_id=#{userId}
+    </select>
+    <select id="searchByStatus" resultType="HashMap">
+        select *
+        from medical_registration m
+        join patient_user_info_card p on m.patient_card_id=p.id
+        where m.payment_status=2
+        <if test="status !=0">and m.status=#{status}</if>
+    </select>
+    <update id="updateStatus" parameterType="Integer">
+      update medical_registration set status=2 where id=#{id}
+    </update>
+</mapper>

@@ -3,5 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.DoctorPriceDao">
-    
+    <select id="searchByPagePrice" resultType="HashMap" parameterType="Map">
+        select d.id as doctorId,d.name as doctorName,d.sex,d.job,md.name as deptName,mds.name as deptSubName,
+        CAST(dp.price_1 as char) as price_1,CAST(dp.price_2 as char) as price_2
+        from doctor as d
+        join doctor_price as dp on dp.doctor_id=d.id
+        join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=d.id
+        join medical_dept_sub as mds on mdsad.dept_sub_id=mds.id
+        join medical_dept as md on md.id=mds.dept_id
+        where 1=1
+        <if test="name !=null">and d.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        <if test="job !=null">and d.job=#{job}</if>
+        and d.status=${status}
+        <if test="order!=null">
+            order by md.id=${order}
+        </if>
+        limit ${length} offset #{start}
+    </select>
+    <select id="searchCount" parameterType="Map" resultType="long">
+        select count(*)
+        from doctor as d
+        join doctor_price as dp on dp.doctor_id=d.id
+        join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=d.id
+        join medical_dept_sub as mds on mdsad.dept_sub_id=mds.id
+        join medical_dept as md on md.id=mds.dept_id
+        where 1=1
+        <if test="name !=null">and d.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        <if test="job !=null">and dp.level=#{job}</if>
+        and d.status=${status}
+    </select>
+    <update id="updatePriceById"  parameterType="Map">
+        update doctor_price set price_1=#{price_1},price_2=#{price_2}
+        where doctor_id=#{doctorId}
+    </update>
 </mapper>

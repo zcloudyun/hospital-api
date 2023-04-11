@@ -3,5 +3,53 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.MedicalDeptDao">
-    
+    <select id="searchAll" resultType="HashMap">
+        select id,name from db_hospital.medical_dept
+    </select>
+    <select id="searchDeptAndSub" resultType="HashMap">
+        select d.id as deptId,
+               d.name as deptName,
+               ds.id as subId,
+               ds.name as subName
+        from db_hospital.medical_dept d
+         join db_hospital.medical_dept_sub ds on ds.dept_id=d.id
+    </select>
+    <select id="searchMedicalDeptList" parameterType="Map" resultType="HashMap">
+        select id,name from medical_dept where 1=1
+        <if test="recommended!=null">
+          AND recommended=#{recommended}
+        </if>
+        <if test="outpatient!=null">
+            AND outpatient=#{outpatient}
+        </if>
+    </select>
+    <select id="searchByPage" parameterType="Map" resultType="HashMap">
+        select *
+        from medical_dept 
+        where 1=1
+        <if test="name !=null">and name like '%${name}%'</if>
+        <if test="outpatient !=null">and outpatient=#{outpatient}</if>
+        <if test="recommended!=null">and recommended=#{recommended}</if>
+        limit ${length} offset #{start}
+    </select>
+
+    <!-- 查询科室-->
+    <select id="selectMedicineDepartment" resultType="com.example.hospital.api.db.Entity.MedicalDeptEntity">
+        select *
+        from medical_dept
+        where 1=1
+        <if test="param.name !=null">and name like %#{param.name}%</if>
+        <if test="param.outpatient !=null">and outpatient=#{param.outpatient}</if>
+        <if test="param.recommended!=null">and recommended=#{param.recommended}</if>
+        limit #{param.length} offset #{param.start}
+    </select>
+   <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalDeptEntity">
+       insert into medical_dept(name,outpatient,description,recommended)
+       values (#{name},#{outpatient},#{description},#{recommended})
+   </insert>
+    <update id="updateById" parameterType="HashMap">
+        update medical_dept set name=#{name},outpatient=#{outpatient},
+                                description=#{description},recommended=#{recommended}
+        where id=#{id}
+    </update>
 </mapper>

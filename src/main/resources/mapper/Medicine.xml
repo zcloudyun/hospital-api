@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.MedicineDao">
+
+    <select id="searchByPage" parameterType="Map" resultType="HashMap">
+        select *
+        from medicine
+        where 1=1
+        <if test="medicine_name !=null">and medicine_name like '%${medicine_name}%'</if>
+        limit #{length} offset #{start}
+    </select>
+    <select id="searchCount" parameterType="Map" resultType="long">
+        select count(*)
+        from medicine
+        where medicine_name like '%${medicine_name}%'
+    </select>
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.DoctorEntity">
+        insert into medicine(medicine_name,scale,approval_num,effects,`use`,bzq,price,num)
+        values(#{medicine_name},#{scale},#{approval_num},#{effects},#{use},#{bzq},#{price},#{num})
+    </insert>
+    <update id="update" parameterType="Map">
+        update medicine set medicine_name=#{medicine_name},scale=#{scale},
+                            approval_num=#{approval_num},effects=#{effects},
+                            `use`=#{use},bzq=#{bzq},price=#{price},num=#{num}
+        where id=#{id}
+    </update>
+    <select id="searchAll" resultType="HashMap">
+        select * from medicine;
+    </select>
+    <update id="updateNum">
+       update medicine set num=num-1
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <select id="searchByIds" parameterType="collection" resultType="com.example.hospital.api.db.Entity.MedicineEntity">
+        select * from medicine
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

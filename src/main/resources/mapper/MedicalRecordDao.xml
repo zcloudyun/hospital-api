@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.MedicalRecordDao">
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalRecordEntity">
+        insert into medical_record(record_code,user_id,doctor_id,dept_id,date,
+                                   description,checkinfo,disease_history,
+                                   diagnosis,prescription,comment,remark,diagnostictype,
+                                   status,createTime,insurance_type,total_price)
+        values (#{record_code},#{user_id},#{doctor_id},#{dept_id},STR_TO_DATE('${date}','%Y-%m-%d'),
+                #{description},#{checkinfo},#{disease_history},
+                #{diagnosis},#{prescription},#{comment},#{remark},#{diagnostictype},
+                #{status},NOW(),#{insurance_type},#{total_price})
+    </insert>
+    <select id="searchAll" resultType="HashMap" parameterType="Map">
+        select mr.id,mr.user_id,mr.date,mr.description,d.name as doctorName,
+               mr.checkinfo,mr.disease_history,mr.diagnosis,
+               mr.comment,mr.remark,mr.diagnostictype,mr.status,mr.insurance_type,
+               p.name,p.sex,p.birthday,p.tel,md.name as deptName
+        from medical_record mr
+        join patient_user_info_card p on mr.user_id=p.id
+        join doctor d on d.id=mr.doctor_id
+        join medical_dept md on md.id=mr.dept_id
+        where 1=1
+        <if test="name !=null">and p.name like '%${name}%'</if>
+        <if test="doctor_name !=null">and d.name like '%${doctor_name}%'</if>
+        <if test="dept_id !=null">and md.id=${dept_id}</if>
+        <if test="date !=null">and mr.date= STR_TO_DATE('${date}','%Y-%m-%d')</if>
+        and mr.status!=3
+        limit ${length} offset #{start}
+    </select>
+    <select id="searchAllCount" parameterType="Map" resultType="long">
+        select count(*)
+        from medical_record mr
+        join patient_user_info_card p on mr.user_id=p.id
+        join doctor d on d.id=mr.doctor_id
+        join medical_dept md on md.id=mr.dept_id
+        where 1=1
+        <if test="name !=null">and p.name like '%${name}%'</if>
+        <if test="doctor_name !=null">and d.name like '%${doctor_name}%'</if>
+        <if test="dept_id !=null">and md.id=${dept_id}</if>
+        <if test="date !=null">and mr.date= STR_TO_DATE('${date}','%Y-%m-%d')</if>
+        and mr.status!=3
+    </select>
+    <update id="deleteIds">
+        update medical_record set status=3
+        where id in
+        <foreach collection="array" open="(" item="id" separator="," close=")">
+            ${id}
+        </foreach>
+    </update>
+    <select id="searchPrescription" parameterType="Map" resultType="com.example.hospital.api.db.Entity.PerscriptionEntity">
+        select m.id,m.user_id as userId,m.date,m.prescription,m.diagnosis,p.name,p.sex,p.birthday,p.tel,
+               d.name as doctorName,md.name as deptName
+        from medical_record m
+        join patient_user_info_card p on p.id=m.user_id
+        join doctor d on m.doctor_id=d.id
+        join medical_dept md on m.dept_id=md.id
+        where 1=1
+        <if test="name !=null">and p.name like '%${name}%'</if>
+        <if test="doctor_name !=null">and d.name like '%${doctor_name}%'</if>
+        <if test="dept_id !=null">and md.id=${dept_id}</if>
+        <if test="date !=null">and m.date= STR_TO_DATE('${date}','%Y-%m-%d')</if>
+        and m.status!=4
+        limit ${length} offset #{start}
+    </select>
+    <select id="searchPrescriptionCount" parameterType="Map" resultType="long">
+        select count(*)
+        from medical_record m
+        join patient_user_info_card p on p.id=m.user_id
+        join doctor d on m.doctor_id=d.id
+        join medical_dept md on m.dept_id=md.id
+        where 1=1
+        <if test="name !=null">and p.name like '%${name}%'</if>
+        <if test="doctor_name !=null">and d.name like '%${doctor_name}%'</if>
+        <if test="dept_id !=null">and md.id=${dept_id}</if>
+        <if test="date !=null">and m.date= STR_TO_DATE('${date}','%Y-%m-%d')</if>
+        and m.status!=4
+    </select>
+    <update id="deleteByIds">
+        update medical_record set status=4
+        where id in
+        <foreach collection="array" open="(" item="id" separator="," close=")">
+            ${id}
+        </foreach>
+    </update>
+</mapper>

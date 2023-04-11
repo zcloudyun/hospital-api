@@ -3,5 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.MedicalDeptSubAndDoctorDao">
-    
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalDeptSubAndDoctorEntity">
+      insert into db_hospital.medical_dept_sub_and_doctor(dept_sub_id,doctor_id)
+      values(${deptSubId},${doctorId})
+    </insert>
+    <update id="updateDoctorSubDept" parameterType="Map">
+        update medical_dept_sub_and_doctor set dept_sub_id=${subId}
+        where doctor_id=#{doctorId}
+    </update>
+    <select id="searchDeptSubId" parameterType="Integer" resultType="com.example.hospital.api.db.Entity.MedicalDeptSubAndDoctorEntity">
+       select d.id,d.name
+       from doctor as d
+       join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=d.id
+       where mdsad.dept_sub_id=#{deptSubId}
+    </select>
 </mapper>

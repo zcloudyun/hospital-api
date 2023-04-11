@@ -1,7 +1,6 @@
 package com.example.hospital.api.config;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import cn.felord.payment.PayException;
 import cn.hutool.json.JSONObject;
 import com.example.hospital.api.exception.HospitalException;
 import lombok.extern.slf4j.Slf4j;
@@ -49,10 +48,6 @@ public class ExceptionAdvice {
             log.error("执行异常", e);
             HospitalException exception = (HospitalException) e;
             json.set("error", exception.getMsg());
-        } else if (e instanceof PayException) {
-            PayException exception = (PayException) e;
-            log.error("微信支付异常", exception);
-            json.set("error", "微信支付异常");
         }
         //处理其余的异常
         else {

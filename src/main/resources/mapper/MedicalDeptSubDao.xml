@@ -3,5 +3,42 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.MedicalDeptSubDao">
-    
+    <select id="searchMedicalDeptSubList" parameterType="int" resultType="HashMap">
+        select id,name from medical_dept_sub where dept_id=#{deptId}
+    </select>
+    <select id="searchByPages" parameterType="HashMap" resultType="HashMap">
+       select mds.id,mds.name,md.name as deptName,mds.location
+       from medical_dept_sub as mds
+       join medical_dept as md on mds.dept_id=md.id
+       where 1=1
+        <if test="name !=null">and mds.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        limit ${length} offset #{start}
+    </select>
+    <select id="searchDoctorNum" resultType="HashMap">
+        select mdsad.dept_sub_id as DeptSubId,count(*) as doctors,d.name,d.job
+        from medical_dept_sub_and_doctor as mdsad
+        join doctor as d on mdsad.doctor_id=d.id
+        group by mdsad.dept_sub_id
+        order by mdsad.dept_sub_id
+    </select>
+    <select id="searchCount" parameterType="HashMap" resultType="Integer">
+        select *
+        from medical_dept_sub
+        where 1=1
+        <if test="name !=null">and mds.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+    </select>
+    <select id="searchByDeptId" parameterType="Integer" resultType="com.example.hospital.api.db.Entity.MedicalDeptSubEntity">
+        select * from medical_dept_sub
+        where dept_id=#{deptId}
+    </select>
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalDeptSubEntity">
+        insert into medical_dept_sub(name,dept_id,location)
+        values (#{name},#{deptId},#{location})
+    </insert>
+    <update id="updateById" parameterType="HashMap">
+         update medical_dept_sub set name=#{name},dept_id=#{deptId},location=#{location}
+         where id=#{id}
+    </update>
 </mapper>

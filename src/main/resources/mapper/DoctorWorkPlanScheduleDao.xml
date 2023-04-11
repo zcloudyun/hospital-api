@@ -3,5 +3,82 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.DoctorWorkPlanScheduleDao">
-    
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.DoctorWorkPlanScheduleEntity">
+        insert into doctor_work_plan_schedule(work_plan_id,slot,maximum,num)
+        values (${workPlanId},${slot},${maximum},0)
+    </insert>
+    <select id="searchNewSchedule" parameterType="int" resultType="HashMap">
+        select s.id as id,
+               s.slot as slot,
+               s.maximum as maximum,
+               s.num as num,
+               p.date as date
+        from doctor_work_plan p
+        join doctor_work_plan_schedule s on p.id=s.work_plan_id
+        where s.work_plan_id=${workplanId}
+    </select>
+    <select id="searchDeptSubSchedule" parameterType="Map" resultType="HashMap">
+        select p.id as workPlanId,
+               d.id as doctorId,
+               d.name as doctorName,
+               s.slot as slot,
+               s.maximum as maximum
+        from doctor_work_plan p
+        join doctor_work_plan_schedule s on s.work_plan_id=p.id
+        join doctor d on p.doctor_id=d.id
+        where p.date=STR_TO_DATE('${date}','%Y-%m-%d')
+          and p.dept_sub_id=${deptSubId}
+        order by d.id,s.slot
+    </select>
+    <select id="searchByWorkPlanId" parameterType="int" resultType="HashMap">
+        select p.doctor_id as doctorId,
+               s.id as scheduleId,
+               s.slot as slot,
+               s.maximum as maximum,
+               s.num as num
+        from doctor_work_plan p
+        join doctor_work_plan_schedule s on s.work_plan_id=p.id
+        where p.id=${workPlanId}
+    </select>
+    <select id="searchSumNumByIds" resultType="long">
+        select SUM(num)
+        from doctor_work_plan_schedule
+        where id in
+        <foreach collection="list" open="(" item="one" separator="," close=")">
+          ${one}
+        </foreach>
+    </select>
+    <delete id="deleteByIds">
+       delete from doctor_work_plan_schedule
+       where id in
+       <foreach collection="list" open="(" item="one" separator="," close=")">
+           ${one}
+       </foreach>
+    </delete>
+    <delete id="deleteByWorkPlanId" parameterType="int">
+        delete from doctor_work_plan_schedule
+        where work_plan_id=${workPlanId}
+    </delete>
+    <select id="searchDoctorWorkPlanSchedule" parameterType="Map" resultType="HashMap">
+        select p.id as workPlanId,
+               s.id as scheduleId,
+               s.slot as slot,
+               s.maximum as maximum,
+               s.num as num
+        from doctor_work_plan p join doctor_work_plan_schedule s on p.id=s.work_plan_id
+        where p.date=STR_TO_DATE('${date}','%Y-%m-%d')
+              and p.doctor_id=${doctorId}
+        order by s.id
+    </select>
+    <update id="updateNumById" parameterType="Map">
+       update doctor_work_plan_schedule set num=num+#{n} where id=#{id}
+    </update>
+    <update id="releaseNumByOutTradeNo" parameterType="String">
+        update doctor_work_plan_schedule set num=num-1
+        where id=(
+            select s.id from medical_rigistration r
+            join doctor_work_plan_schedule s on r.doctor_schedule_id=s.id
+            where r.out_trade_no=#{outTradeNo}
+            )
+    </update>
 </mapper>

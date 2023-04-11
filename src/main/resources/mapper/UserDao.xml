@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.UserDao">
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.UserEntity">
+        insert into patient_user(uuid,nickname,sex,status,create_time)
+        values (#{uuid},#{nickname},#{sex},#{status},NOW())
+    </insert>
+    <select id="searchAlreadyRegistered" parameterType="String" resultType="Integer">
+        select id from patient_user where uuid=#{code}
+        LIMIT 1
+    </select>
+    <select id="searchUserInfo" parameterType="int" resultType="HashMap">
+      select uuid as openId,nickname,sex from patient_user where id=${userId}
+    </select>
+    <select id="searchOpenId" parameterType="int" resultType="HashMap">
+        select u.uuid as openId,
+               c.id as patientCardId
+        from patient_user u join patient_user_info_card c on c.user_id=u.id
+        where u.id=#{userId}
+    </select>
+</mapper>

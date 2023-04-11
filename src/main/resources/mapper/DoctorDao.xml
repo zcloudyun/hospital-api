@@ -3,5 +3,155 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.DoctorDao">
-    
+    <select id="searchByPage" parameterType="Map" resultType="HashMap">
+        select d.id as id,
+               d.name as name,
+               d.sex as sex,
+               d.tel as tel,
+               d.school as school,
+               d.degree as degree,
+               d.job as job,
+               md.name as deptName,
+               ds.name as subName,
+               d.recommended as recommended,
+               d.status as status
+        from db_hospital.doctor d
+          join db_hospital.medical_dept_sub_and_doctor sd on sd.doctor_id=d.id
+          join db_hospital.medical_dept_sub ds on sd.dept_sub_id=ds.id
+          join db_hospital.medical_dept md on ds.dept_id=md.id
+        where 1=1
+        <if test="name !=null">and d.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        <if test="degree !=null">and d.degree=#{degree}</if>
+        <if test="job!=null">and d.job=#{job}</if>
+        <if test="recommended!=null">and d.recommended=${recommended}</if>
+        and d.status=${status}
+        <if test="order!=null">
+            order by md.id=${order}
+        </if>
+        limit ${length} offset #{start}
+    </select>
+    <select id="searchCount" parameterType="Map" resultType="long">
+        select count(*)
+        from db_hospital.doctor d
+        join db_hospital.medical_dept_sub_and_doctor sd on sd.doctor_id=d.id
+        join db_hospital.medical_dept_sub ds on sd.dept_sub_id=ds.id
+        join db_hospital.medical_dept md on ds.dept_id=md.id
+        where 1=1
+        <if test="name !=null">and d.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        <if test="degree !=null">and d.degree=#{degree}</if>
+        <if test="job!=null">and d.job=#{job}</if>
+        <if test="recommended!=null">and d.recommended=${recommended}</if>
+        and d.status=${status}
+    </select>
+    <select id="searchContent" parameterType="int" resultType="HashMap">
+        select photo,pid,birthday,uuid,hiredate,email,
+               remark,tag,address,description
+        from db_hospital.doctor
+        where id=${id}
+
+    </select>
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.DoctorEntity">
+        insert into db_hospital.doctor(name,pid,uuid,sex,
+                              birthday,school,degree,
+                              tel,address,email,job,
+                              remark,description,hiredate,tag,
+                              recommended,status,create_time)
+        values(#{name},#{pid},#{uuid},#{sex},#{birthday},
+               #{school},#{degree},#{tel},#{address},#{email},
+               #{job},#{remark},#{description},#{hiredate},
+               #{tag},#{recommended},#{status},NOW())
+    </insert>
+    <select id="searchIdByUuid" parameterType="String" resultType="Integer">
+        select id from db_hospital.doctor where uuid=#{uuid}
+    </select>
+    <update id="updatePhoto" parameterType="Map">
+        update db_hospital.doctor set photo=#{photo}
+        where id=${id}
+    </update>
+    <select id="searchById" parameterType="int" resultType="HashMap">
+        select d.id as id,
+               d.name as name,
+               d.pid as pid,
+               d.uuid as uuid,
+               d.sex as sex,
+               d.birthday as birthday,
+               d.school as school,
+               d.degree as degree,
+               d.tel as tel,
+               d.address as address,
+               d.email as email,
+               d.job as job,
+               d.remark as remark,
+               d.description as description,
+               d.hiredate as hiredate,
+               d.tag as tag,
+               d.recommended as recommended,
+               d.status as status,
+               md.name as name,
+               sd.dept_sub_id as deptSubId
+        from doctor d
+        join medical_dept_sub_and_doctor sd on sd.doctor_id =d.id
+        join medical_dept_sub s on sd.dept_sub_id=s.id
+        join medical_dept md on s.dept_id=md.id
+        where d.id=${id}
+    </select>
+    <update id="update" parameterType="Map">
+        update doctor set name=#{name},pid=#{pid},sex=#{sex},birthday=#{birthday},school=#{birthday},
+            degree=#{degree},tel=#{tel},address=#{address},email=#{email},job=#{job},
+            remark=#{remark},description=#{description},hiredate=#{hiredate},tag=#{tag},
+            recommended=#{recommended},status=#{status}
+        where id=#{id}
+    </update>
+    <update id="deleteByIds">
+        update doctor set status=4
+        where id in
+        <foreach collection="array" open="(" item="one" separator="," close=")">
+          ${one}
+        </foreach>
+    </update>
+    <select id="searchByDeptSubId" parameterType="int" resultType="HashMap">
+      select d.id as id,
+             d.name as name
+      from doctor d
+      join medical_dept_sub_and_doctor sd on sd.doctor_id=d.id
+      where sd.dept_sub_id =${deptSubId} and d.status=1
+    </select>
+    <select id="searchDataForOnlineCache" parameterType="int" resultType="HashMap">
+      select d.id as doctorId,
+             d.uuid as uuid,
+             d.name as name,
+             d.photo as photo,
+             d.job as job,
+             d.description as description,
+             d.remark as remark,
+             md.id as deptId,
+             md.name as deptName,
+             ds.id as subId,
+             ds.name as subName,
+             CAST(dp.price_2 as char) as price
+      from doctor d
+      join medical_dept_sub_and_doctor sd on sd.doctor_id=d.id
+      join medical_dept_sub ds on sd.dept_sub_id=ds.id
+      join medical_dept md on md.id=ds.dept_id
+      join doctor_price dp on dp.doctor_id=d.id
+      where d.id=${doctorId}
+    </select>
+    <select id="searchDoctorInfoById" parameterType="int" resultType="HashMap">
+        select d.name as name,
+               d.photo as photo,
+               d.job as job,
+               d.remark as remark,
+               d.description as description,
+               CAST(p.price_1 as char) as price
+        from doctor d join doctor_price p on d.id=p.doctor_id
+        where d.id=#{id}
+    </select>
+    <select id="searchOpenId" parameterType="int" resultType="HashMap">
+        select u.open_id as openId,
+               c.id as patientCardId
+        from patient_user u join patient_user_info_card c on c.user_id=u.id
+        where u.id=#{userId}
+    </select>
 </mapper>

@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class StpInterfaceImpl implements StpInterface {
     @Resource
-    private MisUserDao userDao;
+    private MisUserDao misUserDao;
 
     /**
      * 返回一个用户所拥有的权限集合
@@ -19,7 +19,7 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginKey) {
         int userId = Integer.parseInt(loginId.toString());
-        ArrayList<String> list = userDao.searchUserPermissions(userId);
+        ArrayList<String> list = misUserDao.searchUserPermissions(userId);
         return list;
     }
 
