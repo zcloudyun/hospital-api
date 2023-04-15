@@ -20,4 +20,5 @@ public interface RegistrationService {
 
     public HashMap searchRegistrationInfo(Map param);
     public ArrayList<HashMap> searchByStatus(Integer status);
+    public HashMap searchRegistrationById(Map param);
 }

@@ -4,14 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.MedicalRecordDao">
     <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalRecordEntity">
-        insert into medical_record(record_code,user_id,doctor_id,dept_id,date,
+        insert into medical_record(record_code,patient_card_id,doctor_id,dept_id,date,
                                    description,checkinfo,disease_history,
                                    diagnosis,prescription,comment,remark,diagnostictype,
-                                   status,createTime,insurance_type,total_price)
-        values (#{record_code},#{user_id},#{doctor_id},#{dept_id},STR_TO_DATE('${date}','%Y-%m-%d'),
+                                   status,createTime,insurance_type,total_price,registion_id)
+        values (#{record_code},#{patient_card_id},#{doctor_id},#{dept_id},STR_TO_DATE('${date}','%Y-%m-%d'),
                 #{description},#{checkinfo},#{disease_history},
                 #{diagnosis},#{prescription},#{comment},#{remark},#{diagnostictype},
-                #{status},NOW(),#{insurance_type},#{total_price})
+                #{status},NOW(),#{insurance_type},#{total_price},#{registion_id})
     </insert>
     <select id="searchAll" resultType="HashMap" parameterType="Map">
         select mr.id,mr.user_id,mr.date,mr.description,d.name as doctorName,
@@ -85,4 +85,22 @@
             ${id}
         </foreach>
     </update>
+    <select id="searchByUserId" parameterType="Integer" resultType="HashMap">
+        select mds.name as deptSubName,d.name as doctorName,p.name,
+               p.sex,p.birthday,mr.diagnosis,mr.prescription,p.uuid
+        from medical_record as mr
+        join patient_user_info_crad p on p.id=mr.user_id
+        join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=mr.doctor_id
+        join medical_dept_sub as mds on mds.id=mdsad.dept_sub_id
+        join doctor as d on d.id=mr.doctor_id
+        where p.user_id=#{id}
+    </select>
+    <select id="searchRpById" resultType="HashMap">
+        select *
+        from medicine
+        where id in
+        <foreach collection="array" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

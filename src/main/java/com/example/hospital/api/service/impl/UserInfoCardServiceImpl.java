@@ -29,7 +29,7 @@ public class UserInfoCardServiceImpl implements UserInfoCardService {
             //从map中获取medicalHistory
             String medicalHistory= MapUtil.getStr(map,"medicalHistory");
             //把数组转换为json数组
-            JSONArray array= JSONUtil.parseArray(medicalHistory);
+            String[] array = UserInfoCardEntity.convertToArray(medicalHistory);
             map.replace("medicalHistory",array);
         }
         return map;

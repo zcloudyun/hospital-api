@@ -105,4 +105,14 @@ public class RegistrationController {
     ArrayList<HashMap> list=registrationService.searchByStatus(status);
     return R.ok().put("result",list);
   }
+
+  @PostMapping("/searchRegistrationById")
+  @SaCheckLogin
+  public R searchRegistrationById(@RequestBody @Valid SearchRegistrationByIdForm form){
+    int userId=StpUtil.getLoginIdAsInt();
+    form.setUserId(userId);
+    Map param= BeanUtil.beanToMap(form);
+    HashMap map=registrationService.searchRegistrationById(param);
+    return R.ok().put("result",map);
+  }
 }

@@ -86,7 +86,7 @@ public class MedicalDeptSubServiceImpl extends ServiceImpl<MedicalDeptSubDao, Me
      * @return
      */
     @Override
-    public R searchMedicalDeptSubDoctorList(GetDeptSubDoctorsRequest request) {
+    public PageUtils searchMedicalDeptSubDoctorList(GetDeptSubDoctorsRequest request) {
 
         // 参数校验
         if (Objects.isNull(request)) {
@@ -96,11 +96,12 @@ public class MedicalDeptSubServiceImpl extends ServiceImpl<MedicalDeptSubDao, Me
 
         // 响应对象
         List<MedicalDeptSubManageVO> voList = new ArrayList<>();
+
         // 分页查询
         Page<MedicalDeptSubEntity> page = this.lambdaQuery()
                 .eq(Objects.nonNull(request.getDeptId()), MedicalDeptSubEntity::getDeptId, request.getDeptId())
                 .eq(StringUtils.isNotEmpty(request.getDeptSubName()), MedicalDeptSubEntity::getName, request.getDeptSubName())
-                .page(Page.of(request.getStart(), request.getLength()));
+                .page(Page.of(request.getStart(), request.getLength(),true));
 
         List<MedicalDeptSubEntity> records = page.getRecords();
         voList = records.stream().map(subDept -> {
@@ -127,7 +128,8 @@ public class MedicalDeptSubServiceImpl extends ServiceImpl<MedicalDeptSubDao, Me
             vo.setDeptSubEntity(subDept);
             return vo;
         }).collect(Collectors.toList());
-        return R.data(voList);
+        PageUtils pageUtils=new PageUtils(voList,page.getTotal(), request.getStart(), request.getLength());
+        return pageUtils;
     }
 
     @Override
@@ -138,7 +140,6 @@ public class MedicalDeptSubServiceImpl extends ServiceImpl<MedicalDeptSubDao, Me
 
     @Override
     public void updateById(Map param){
-
         medicalDeptSubDao.updateById(param);
     }
 

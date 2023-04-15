@@ -1,6 +1,7 @@
 package com.example.hospital.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.hospital.api.common.PageUtils;
 import com.example.hospital.api.db.Entity.MedicalDeptEntity;
 import com.example.hospital.api.db.Entity.request.MedicineDeptManageRequest;
 import com.example.hospital.api.db.Entity.vo.MedicalDepartmentManagementVO;
@@ -17,5 +18,5 @@ public interface MedicalDeptService extends IService<MedicalDeptEntity> {
     public void updateById(Map param);
     public ArrayList<HashMap> searchMedicalDeptList(Map param);
 
-    List<MedicalDepartmentManagementVO> getMedicineDepartmentManagement(MedicineDeptManageRequest request);
+    PageUtils getMedicineDepartmentManagement(MedicineDeptManageRequest request);
 }

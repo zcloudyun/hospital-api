@@ -9,6 +9,6 @@ import java.util.Map;
 @Mapper
 public interface DoctorPrescriptionDao {
  public void insert(DoctorPrescriptionEntity entity);
- public HashMap searchPrescriptionByRegistrationId(Map param);
+ public HashMap searchPrescriptionById(Map param);
 }
 

@@ -7,21 +7,22 @@
       insert into doctor_prescription (uuid,patient_card_id,diagnosis,sub_dept_id,doctor_id,registration_id,rp)
       values (#{uuid},#{patientCardId},#{diagnosis},#{subDeptId},#{doctorId},#{registrationId},#{rp})
   </insert>
-    <select id="searchPrescriptionByRegistrationId" parameterType="Map" resultType="HashMap">
-        select dp.uuid as uuid,
-               ds.name as deptSub,
-               dp.diagnosis as diagnosis,
-               dp.rp as rp,
+    <select id="searchPrescriptionById" parameterType="Map" resultType="HashMap">
+        select dr.record_code as uuid,
+               ds.name as deptSubName,
+               dr.diagnosis as diagnosis,
+               dr.prescription as rp,
                pc.name as patientName,
                pc.sex as patientSex,
-               CAST(pc.birthday as char) as patientBirthday,
-               d.name as doctorNme
-        from doctor_prescription dp join doctor d on d.id=dp.doctor_id
-        join patient_user_info_card pc on pc.id=dp.patient_card_id
-        join medical_dept_sub ds on ds.id=dp.sub_dept_id
-        where dp.registration_id=#{registrationId}
+               pc.birthday,
+               d.name as doctorName
+        from medical_record dr join doctor d on d.id=dr.doctor_id
+        join patient_user_info_card pc on pc.id=dr.patient_card_id
+        join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=d.id
+        join medical_dept_sub as  ds on ds.id=mdsad.dept_sub_id
+        where dr.registion_id=#{registrationId}
         <if test="userId!=null">
-            AND pc.user_id=#{userId}
+            and pc.user_id=#{userId}
         </if>
     </select>
 </mapper>

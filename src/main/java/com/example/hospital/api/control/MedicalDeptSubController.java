@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
+import com.example.hospital.api.common.PageUtils;
 import com.example.hospital.api.common.R;
 import com.example.hospital.api.control.form.GetDeptSubDoctorsRequest;
 import com.example.hospital.api.control.form.InsertDeptSubForm;
@@ -40,7 +41,8 @@ public class MedicalDeptSubController {
     @PostMapping("/getMedicalDeptSubDoctors")
     public R searchMedicalDeptSubDoctorList(@RequestBody GetDeptSubDoctorsRequest request) {
         log.info("查询诊室下医生信息：{}", request);
-        return this.medicalDeptSubService.searchMedicalDeptSubDoctorList(request);
+        PageUtils page= this.medicalDeptSubService.searchMedicalDeptSubDoctorList(request);
+        return R.ok().put("result",page);
     }
 
     @PostMapping("/insert")

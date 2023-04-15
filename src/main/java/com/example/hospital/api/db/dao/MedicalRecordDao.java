@@ -16,4 +16,7 @@ public interface MedicalRecordDao {
     public List<PerscriptionEntity> searchPrescription(Map param);
     public long searchPrescriptionCount(Map param);
     public void deleteByIds(Integer[] ids);
+
+    public ArrayList<HashMap> searchByUserId(Integer id);
+    public ArrayList<HashMap> searchRpById(Integer[] ids);
 }

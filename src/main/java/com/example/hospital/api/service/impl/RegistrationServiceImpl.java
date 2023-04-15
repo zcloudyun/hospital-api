@@ -268,4 +268,10 @@ public class RegistrationServiceImpl implements RegistrationService {
        ArrayList<HashMap> list= medicalRegistrationDao.searchByStatus(status);
        return list;
     }
+
+    @Override
+    public HashMap searchRegistrationById(Map param){
+        HashMap map=medicalRegistrationDao.searchRegistrationById(param);
+        return map;
+    }
 }

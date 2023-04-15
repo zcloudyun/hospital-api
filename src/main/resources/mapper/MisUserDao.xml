@@ -17,5 +17,53 @@
     <select id="searchRefId" parameterType="int" resultType="HashMap">
         select job,ref_id as refId from mis_user where id=${id}
     </select>
-
+    <select id="searchUserByPages" parameterType="HashMap" resultType="HashMap">
+        select u.id as id,
+               u.username as username,
+               u.password as password,
+               u.name as name,
+               u.sex as sex,
+               u.tel as tel,
+               u.email as email,
+               u.job as job,
+               u.status as status,
+               md.name as deptName
+        from mis_user as u
+        join medical_dept as md on u.dept_id=md.id
+        where 1=1
+        <if test="name !=null">and u.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        <if test="job!=null">and u.job=#{job}</if>
+        and u.status=${status}
+        limit ${length} offset #{start}
+    </select>
+    <select id="searchCount" parameterType="HashMap" resultType="Long">
+        select count(*)
+        from mis_user as u
+        join medical_dept as md on u.dept_id=md.id
+        where 1=1
+        <if test="name !=null">and u.name like '%${name}%'</if>
+        <if test="deptId !=null">and md.id=${deptId}</if>
+        <if test="job!=null">and u.job=#{job}</if>
+        and u.status=${status}
+    </select>
+    <insert id="insertUser" parameterType="com.example.hospital.api.db.Entity.MisUserEntity">
+        insert into mis_user(username,password,name,sex,tel,
+                             email,dept_id,job,status,create_time)
+        values (#{username},#{password},#{name},#{sex},#{tel},#{email},#{deptId},
+                #{job},#{status},NOW())
+    </insert>
+    <update id="updateUser" parameterType="Map">
+        update mis_user set username=#{username},password=#{password},name=#{name},
+                            sex=#{sex},tel=#{tel},email=#{email},
+                            dept_id=#{deptId},job=#{job},status=#{status}
+        where id=#{id}
+    </update>
+    <update id="deleteUser">
+        update mis_user set status=4
+        where id in
+        <foreach collection="array" open="(" item="one" separator="," close=")">
+            ${one}
+        </foreach>
+    </update>
 </mapper>

@@ -50,8 +50,7 @@ public class UserInfoCardController {
     @SaCheckLogin
     public R update(@RequestBody @Valid UpdateUserInfoCardForm form){
         UserInfoCardEntity entity=BeanUtil.toBean(form,UserInfoCardEntity.class);
-        String json= JSONUtil.parseArray(form.getMedicalHistory()).toString();
-        entity.setMedicalHistory(json);
+        entity.setMedicalHistory(UserInfoCardEntity.convertToString(form.getMedicalHistory()));
         userInfoCardService.update(entity);
         return R.ok();
     }

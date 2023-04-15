@@ -75,4 +75,17 @@
     <update id="updateStatus" parameterType="Integer">
       update medical_registration set status=2 where id=#{id}
     </update>
+    <select id="searchRegistrationById" resultType="HashMap" parameterType="Map">
+        select mr.date,mr.slot,mr.amount,mds.location,d.name as doctorName,
+               mds.name as deptSubName,p.name as patientName,d.job,
+               mr.payment_status as paymentStatus,mr.status
+        from medical_registration as mr
+        join doctor as d on d.id=mr.doctor_id
+        join patient_user_info_card as p on p.id=mr.patient_card_id
+        join medical_dept_sub as mds on mds.id=mr.dept_sub_id
+        where mr.id=#{registrationId}
+        <if test="userId!=null">
+            and p.user_id=#{userId}
+        </if>
+    </select>
 </mapper>

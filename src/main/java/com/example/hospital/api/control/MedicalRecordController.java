@@ -31,7 +31,6 @@ public class MedicalRecordController {
     @SaCheckLogin
     public R searchId(@RequestBody @Valid InsertMedicalRecordForm form){
         Map param = BeanUtil.beanToMap(form);
-        param.replace("disease_history",UserInfoCardEntity.convertToString(form.getDisease_history()));
         medicalRecordService.insert(param);
         return R.ok();
     }

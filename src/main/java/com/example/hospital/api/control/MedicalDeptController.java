@@ -2,6 +2,7 @@ package com.example.hospital.api.control;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.hutool.core.bean.BeanUtil;
+import com.example.hospital.api.common.PageUtils;
 import com.example.hospital.api.common.R;
 import com.example.hospital.api.control.form.*;
 import com.example.hospital.api.db.Entity.request.MedicineDeptManageRequest;
@@ -49,10 +50,8 @@ public class MedicalDeptController {
      */
     @PostMapping("/getMedicineDepartmentManagement")
     public R getMedicineDepartmentManagement(@RequestBody MedicineDeptManageRequest request) {
-
-        List<MedicalDepartmentManagementVO> vo = this.medicalDeptService.getMedicineDepartmentManagement(request);
-
-        return R.ok().put("result",vo);
+        PageUtils page = this.medicalDeptService.getMedicineDepartmentManagement(request);
+        return R.ok().put("result",page);
     }
     @PostMapping("/insert")
     @SaCheckLogin

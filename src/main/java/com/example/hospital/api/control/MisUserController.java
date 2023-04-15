@@ -3,8 +3,11 @@ package com.example.hospital.api.control;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONUtil;
+import com.example.hospital.api.common.PageUtils;
 import com.example.hospital.api.common.R;
-import com.example.hospital.api.control.form.LoginForm;
+import com.example.hospital.api.control.form.*;
 import com.example.hospital.api.service.MisUserService;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
@@ -52,5 +55,38 @@ public class MisUserController {
         return R.ok();
     }
 
+    @PostMapping("/searchUserByPages")
+    @SaCheckLogin
+    public R searchUserByPages(@RequestBody @Valid SearchUserBypagesForm form){
+        Map param = BeanUtil.beanToMap(form);
+        int page = form.getPage();
+        int length = form.getLength();
+        //从当前页的第-开始
+        int start = (page - 1) * length;
+        param.put("start", start);
+        PageUtils pageUtils = misUserService.searchUserByPages(param);
+        return R.ok().put("result", pageUtils);
+    }
 
+    @PostMapping("/insertUser")
+    @SaCheckLogin
+    public R insertUser(@RequestBody @Valid InsertUserForm form){
+        Map param = BeanUtil.beanToMap(form);
+        misUserService.insertUser(param);
+        return R.ok();
+    }
+
+    @PostMapping("/updateUser")
+    @SaCheckLogin
+    public R updateUser(@RequestBody @Valid UpdateUserForm form){
+        Map param = BeanUtil.beanToMap(form);
+        misUserService.updateUser(param);
+        return R.ok();
+    }
+
+    @PostMapping("/deleteUser")
+    public R deleteUser(@RequestBody @Valid DeleteUserForm form){
+        misUserService.deleteUser(form.getIds());
+        return R.ok();
+    }
 }
