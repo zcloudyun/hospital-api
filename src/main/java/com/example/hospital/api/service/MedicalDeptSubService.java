@@ -18,7 +18,7 @@ public interface MedicalDeptSubService extends IService<MedicalDeptSubEntity> {
     public List<MedicalDeptSubEntity> getMedicalDeptSubListByDeptId(Integer deptId);
 
 
-    R searchMedicalDeptSubDoctorList(GetDeptSubDoctorsRequest request);
+    PageUtils searchMedicalDeptSubDoctorList(GetDeptSubDoctorsRequest request);
 
     public void insert(Map param);
     public void updateById(Map param);

@@ -4,22 +4,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.MedicalRecordDao">
     <insert id="insert" parameterType="com.example.hospital.api.db.Entity.MedicalRecordEntity">
-        insert into medical_record(record_code,user_id,doctor_id,dept_id,date,
+        insert into medical_record(record_code,patient_card_id,doctor_id,dept_id,date,
                                    description,checkinfo,disease_history,
                                    diagnosis,prescription,comment,remark,diagnostictype,
-                                   status,createTime,insurance_type,total_price)
-        values (#{record_code},#{user_id},#{doctor_id},#{dept_id},STR_TO_DATE('${date}','%Y-%m-%d'),
+                                   status,createTime,insurance_type,total_price,registion_id)
+        values (#{record_code},#{patient_card_id},#{doctor_id},#{dept_id},STR_TO_DATE('${date}','%Y-%m-%d'),
                 #{description},#{checkinfo},#{disease_history},
                 #{diagnosis},#{prescription},#{comment},#{remark},#{diagnostictype},
-                #{status},NOW(),#{insurance_type},#{total_price})
+                #{status},NOW(),#{insurance_type},#{total_price},#{registion_id})
     </insert>
     <select id="searchAll" resultType="HashMap" parameterType="Map">
-        select mr.id,mr.user_id,mr.date,mr.description,d.name as doctorName,
+        select mr.id,mr.patient_card_id as userId,mr.date,mr.description,d.name as doctorName,
                mr.checkinfo,mr.disease_history,mr.diagnosis,
                mr.comment,mr.remark,mr.diagnostictype,mr.status,mr.insurance_type,
                p.name,p.sex,p.birthday,p.tel,md.name as deptName
         from medical_record mr
-        join patient_user_info_card p on mr.user_id=p.id
+        join patient_user_info_card p on mr.patient_card_id=p.id
         join doctor d on d.id=mr.doctor_id
         join medical_dept md on md.id=mr.dept_id
         where 1=1
@@ -33,7 +33,7 @@
     <select id="searchAllCount" parameterType="Map" resultType="long">
         select count(*)
         from medical_record mr
-        join patient_user_info_card p on mr.user_id=p.id
+        join patient_user_info_card p on mr.patient_card_id=p.id
         join doctor d on d.id=mr.doctor_id
         join medical_dept md on md.id=mr.dept_id
         where 1=1
@@ -51,10 +51,10 @@
         </foreach>
     </update>
     <select id="searchPrescription" parameterType="Map" resultType="com.example.hospital.api.db.Entity.PerscriptionEntity">
-        select m.id,m.user_id as userId,m.date,m.prescription,m.diagnosis,p.name,p.sex,p.birthday,p.tel,
+        select m.id,m.patient_card_id as userId,m.date,m.prescription,m.diagnosis,p.name,p.sex,p.birthday,p.tel,
                d.name as doctorName,md.name as deptName
         from medical_record m
-        join patient_user_info_card p on p.id=m.user_id
+        join patient_user_info_card p on p.id=m.patient_card_id
         join doctor d on m.doctor_id=d.id
         join medical_dept md on m.dept_id=md.id
         where 1=1
@@ -68,7 +68,7 @@
     <select id="searchPrescriptionCount" parameterType="Map" resultType="long">
         select count(*)
         from medical_record m
-        join patient_user_info_card p on p.id=m.user_id
+        join patient_user_info_card p on p.id=m.patient_card_id
         join doctor d on m.doctor_id=d.id
         join medical_dept md on m.dept_id=md.id
         where 1=1
@@ -85,4 +85,42 @@
             ${id}
         </foreach>
     </update>
+    <select id="searchByUserId" parameterType="Integer" resultType="HashMap">
+        select mds.name as deptSubName,d.name as doctorName,p.name,
+               p.sex,p.birthday,mr.diagnosis,mr.prescription,p.uuid
+        from medical_record as mr
+        join patient_user_info_crad p on p.id=mr.patient_card_id
+        join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=mr.doctor_id
+        join medical_dept_sub as mds on mds.id=mdsad.dept_sub_id
+        join doctor as d on d.id=mr.doctor_id
+        where p.user_id=#{id}
+    </select>
+    <select id="searchRpById" resultType="HashMap">
+        select *
+        from medicine
+        where id in
+        <foreach collection="array" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="searchByUserIdRecord" parameterType="Integer" resultType="HashMap">
+        select m.id,d.name as doctorName,mds.name as deptSubName,m.createTime,p.name,
+               m.registion_id as registrationId
+        from medical_record as m
+        join doctor as d on m.doctor_id=d.id
+        join medical_registration as mr on mr.id=m.registion_id
+        join medical_dept_sub as mds on mds.id=mr.dept_sub_id
+        join patient_user_info_card as p on p.id=m.patient_card_id
+        where p.user_id=#{userId}
+    </select>
+    <select id="searchByRecordId" parameterType="Integer" resultType="HashMap">
+        select d.name as doctorName,mds.name as deptSubName,m.disease_history as diseaseHistory,
+               m.checkinfo,m.diagnosis,m.remark,m.createTime,m.insurance_type,m.description,
+               m.registion_id as registionId
+        from medical_record as m
+        join doctor as d on d.id=m.doctor_id
+        join medical_registration as mr on mr.id=m.registion_id
+        join medical_dept_sub as mds on mds.id=mr.dept_sub_id
+        where m.id=#{recordId}
+    </select>
 </mapper>

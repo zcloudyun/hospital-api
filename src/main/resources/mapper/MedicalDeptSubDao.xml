@@ -13,7 +13,7 @@
        where 1=1
         <if test="name !=null">and mds.name like '%${name}%'</if>
         <if test="deptId !=null">and md.id=${deptId}</if>
-        limit ${length} offset #{start}
+        limit #{length} offset #{start}
     </select>
     <select id="searchDoctorNum" resultType="HashMap">
         select mdsad.dept_sub_id as DeptSubId,count(*) as doctors,d.name,d.job

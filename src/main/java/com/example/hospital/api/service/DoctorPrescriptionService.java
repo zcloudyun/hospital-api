@@ -4,5 +4,5 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface DoctorPrescriptionService {
-    public HashMap searchPrescriptionByRegistrationId(Map param);
+    public HashMap searchPrescriptionById(Map param);
 }

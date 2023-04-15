@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class MedicalRecordEntity {
     private String record_code;
-    private Integer user_id;
+    private Integer patient_card_id;
     private Integer doctor_id;
     private Integer dept_id;
     private String date;
@@ -20,4 +20,5 @@ public class MedicalRecordEntity {
     private Integer status;
     private String insurance_type;
     private String total_price;
+    private Integer registion_id;
 }

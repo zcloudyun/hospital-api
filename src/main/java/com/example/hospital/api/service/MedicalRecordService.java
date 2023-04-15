@@ -13,4 +13,6 @@ public interface MedicalRecordService {
     public void deleteIds(Integer[] ids);
     public PageUtils searchPrescription(Map param);
     public void deleteByIds(Integer[] ids);
+    public ArrayList<HashMap> searchByUserIdRecord(Integer userId);
+    public HashMap searchByRecordId(Integer recordId);
 }

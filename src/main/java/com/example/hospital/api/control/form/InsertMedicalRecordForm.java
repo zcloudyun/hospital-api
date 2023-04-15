@@ -11,9 +11,9 @@ public class InsertMedicalRecordForm {
     @NotBlank(message = "record_code不能为空")
     private String record_code;
 
-    @NotNull(message = "user_id不能为空")
-    @Min(value = 1,message = "user_id不能小于1")
-    private Integer user_id;
+    @NotNull(message = "patient_card_id不能为空")
+    @Min(value = 1,message = "patient_card_id不能小于1")
+    private Integer patient_card_id;
 
     @NotNull(message = "doctor_id不能为空")
     @Min(value = 1,message = "doctor_id不能小于1")
@@ -42,7 +42,7 @@ public class InsertMedicalRecordForm {
     @NotBlank(message = "diagnosis不能为空")
     private String diagnosis;
 
-    private String[] disease_history;
+    private String disease_history;
     private String prescription;
     private String comment;
     private String remark;

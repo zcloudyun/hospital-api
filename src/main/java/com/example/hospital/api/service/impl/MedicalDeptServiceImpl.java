@@ -3,7 +3,9 @@ package com.example.hospital.api.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.hospital.api.common.PageUtils;
 import com.example.hospital.api.db.Entity.MedicalDeptEntity;
 import com.example.hospital.api.db.Entity.MedicalDeptSubAndDoctorEntity;
 import com.example.hospital.api.db.Entity.MedicalDeptSubEntity;
@@ -16,6 +18,7 @@ import com.example.hospital.api.service.MedicalDeptService;
 import com.example.hospital.api.service.MedicalDeptSubAndDoctorService;
 import com.example.hospital.api.service.MedicalDeptSubService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -76,15 +79,31 @@ public class MedicalDeptServiceImpl extends ServiceImpl<MedicalDeptDao, MedicalD
      * @return
      */
     @Override
-    public List<MedicalDepartmentManagementVO> getMedicineDepartmentManagement(MedicineDeptManageRequest request) {
+    public PageUtils getMedicineDepartmentManagement(MedicineDeptManageRequest request) {
 
         // 参数校验
         log.info("getMedicineDepartmentManagement: {}", request);
 
+        String sql = "select *\n" +
+                "        from medical_dept\n" +
+                "        where 1=1\n" +
+                "        <if test=\"param.name !=null\">and name like %#{param.name}%</if>\n" +
+                "        <if test=\"param.outpatient !=null\">and outpatient=#{param.outpatient}</if>\n" +
+                "        <if test=\"param.recommended!=null\">and recommended=#{param.recommended}</if>\n" +
+                "        limit #{param.length} offset #{param.start}";
+        Page<MedicalDeptEntity> page = this.lambdaQuery()
+                .eq(Objects.nonNull(request.getOutpatient()), MedicalDeptEntity::getOutpatient, request.getOutpatient())
+                .eq(Objects.nonNull(request.getRecommended()), MedicalDeptEntity::getRecommended, request.getRecommended())
+                .like(StringUtils.isNotEmpty(request.getName()), MedicalDeptEntity::getName, request.getName())
+                .page(Page.of(request.getStart(), request.getLength(), true));
+
+
+
         // 查询科室
-        List<MedicalDeptEntity> medicalDeptEntities = this.medicalDeptDao.selectMedicineDepartment(request);
+        // List<MedicalDeptEntity> medicalDeptEntities = this.medicalDeptDao.selectMedicineDepartment(request);
+        List<MedicalDeptEntity> medicalDeptEntities = page.getRecords();
         // 查询科室下诊室，医生
-        List<MedicalDepartmentManagementVO> res = medicalDeptEntities.stream().map(dept -> {
+        List<MedicalDepartmentManagementVO> voList = medicalDeptEntities.stream().map(dept -> {
             MedicalDepartmentManagementVO vo = new MedicalDepartmentManagementVO();
             // 获取诊室
             List<MedicalDeptSubEntity> subDeptList = this.medicalDeptSubService.getMedicalDeptSubListByDeptId(dept.getId());
@@ -98,7 +117,9 @@ public class MedicalDeptServiceImpl extends ServiceImpl<MedicalDeptDao, MedicalD
             return vo;
         }).collect(Collectors.toList());
 
-        return res;
+        PageUtils pageUtils=new PageUtils(voList,page.getTotal(), request.getStart(), request.getLength());
+
+        return pageUtils;
     }
     @Override
     public void insert(Map param){

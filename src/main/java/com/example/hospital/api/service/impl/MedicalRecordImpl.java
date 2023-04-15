@@ -103,4 +103,16 @@ public class MedicalRecordImpl implements MedicalRecordService {
     public void deleteIds(Integer[] ids){
         medicalRecordDao.deleteIds(ids);
     }
+
+    @Override
+    public ArrayList<HashMap> searchByUserIdRecord(Integer userId){
+        ArrayList<HashMap> list = medicalRecordDao.searchByUserIdRecord(userId);
+        return list;
+
+    }
+    public HashMap searchByRecordId(Integer recordId){
+        HashMap map = medicalRecordDao.searchByRecordId(recordId);
+        return map;
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.hospital.api.control;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import com.example.hospital.api.common.PageUtils;
@@ -31,7 +32,6 @@ public class MedicalRecordController {
     @SaCheckLogin
     public R searchId(@RequestBody @Valid InsertMedicalRecordForm form){
         Map param = BeanUtil.beanToMap(form);
-        param.replace("disease_history",UserInfoCardEntity.convertToString(form.getDisease_history()));
         medicalRecordService.insert(param);
         return R.ok();
     }
@@ -75,5 +75,19 @@ public class MedicalRecordController {
     public R deleteIds(@RequestBody @Valid DeleteMedicalRecordForm form){
         medicalRecordService.deleteIds(form.getIds());
         return R.ok();
+    }
+
+    @PostMapping("/searchRecordAll")
+    public R searchRecordAll(@RequestBody @Valid RequestByUserIdForm form){
+        int userId=StpUtil.getLoginIdAsInt();
+        ArrayList<HashMap> list = medicalRecordService.searchByUserIdRecord(userId);
+        return R.ok().put("result",list);
+    }
+
+    @PostMapping("/searchByRecordId")
+    public R searchByRecordId(@RequestBody @Valid RequestRecordIdForm form){
+        Integer recordId = form.getRecordId();
+        HashMap map = medicalRecordService.searchByRecordId(recordId);
+        return R.ok().put("result",map);
     }
 }

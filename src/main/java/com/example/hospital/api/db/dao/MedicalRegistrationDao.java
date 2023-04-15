@@ -21,6 +21,11 @@ public interface MedicalRegistrationDao {
     public ArrayList<HashMap> searchByStatus(Integer status);
 
     public void updateStatus(Integer id);
+    public HashMap searchRegistrationById(Map param);
+
+    public ArrayList<HashMap> searchByUserId(Map param);
+    public Boolean updateByRegistrationId(Integer registrationId);
+    public void updateEvaluate(Integer registrationId);
 }
 
 

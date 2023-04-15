@@ -105,4 +105,32 @@ public class RegistrationController {
     ArrayList<HashMap> list=registrationService.searchByStatus(status);
     return R.ok().put("result",list);
   }
+
+  @PostMapping("/searchRegistrationById")
+  @SaCheckLogin
+  public R searchRegistrationById(@RequestBody @Valid SearchRegistrationByIdForm form){
+    int userId=StpUtil.getLoginIdAsInt();
+    form.setUserId(userId);
+    Map param= BeanUtil.beanToMap(form);
+    HashMap map=registrationService.searchRegistrationById(param);
+    return R.ok().put("result",map);
+  }
+
+  //查询患者挂号记录
+  @PostMapping("/searchByUserId")
+  public R searchByUserId(@RequestBody @Valid SearchByUserIdForm form){
+    Map param=BeanUtil.beanToMap(form);
+    Integer userId=StpUtil.getLoginIdAsInt();
+    param.replace("userId",userId);
+    ArrayList<HashMap> list=registrationService.searchByUserId(param);
+    return R.ok().put("result",list);
+  }
+
+  @PostMapping("/updateByRegistrationId")
+  public R searchByRegistrationId(@RequestBody @Valid UpdateByRegistrationForm form){
+    Map param=BeanUtil.beanToMap(form);
+    Integer registrationId=MapUtil.getInt(param,"registrationId");
+    Boolean bool=registrationService.updateByRegistrationId(registrationId);
+    return R.ok().put("result",bool);
+  }
 }
