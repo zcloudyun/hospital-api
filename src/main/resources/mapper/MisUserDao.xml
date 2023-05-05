@@ -66,4 +66,8 @@
             ${one}
         </foreach>
     </update>
+    <select id="searchUserId" parameterType="HashMap" resultType="Integer">
+        select id from mis_user
+        where ref_id=#{refId} and job=#{job}
+    </select>
 </mapper>

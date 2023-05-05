@@ -3,5 +3,30 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.VideoDiagnoseFileDao">
-
+   <insert id="uploadImg" parameterType="HashMap">
+       insert into video_diagnose_file(video_diagnose_id,filename,path,create_time)
+       values (#{videoDiagnoseId},#{filename},#{path},NOW())
+   </insert>
+    <select id="searchImageByVideoDiagnoseId" parameterType="Integer" resultType="HashMap">
+        select filename,path
+        from video_diagnose_file
+        where video_diagnose_id=#{videoDiagnoseId}
+    </select>
+    <select id="searchfilenameByVideoDiagnoseId" parameterType="Integer" resultType="String">
+        select filename
+        from video_diagnose_file
+        where video_diagnose_id=#{videoDiagnoseId}
+    </select>
+    <delete id="delete" parameterType="Map">
+        delete from video_diagnose_file
+        where video_diagnose_id=#{videoDiagnoseId}
+        <if test="filename!=null">
+            and filename=#{filename}
+        </if>
+    </delete>
+    <select id="searchImgByVideoDiagnoseId" parameterType="Integer" resultType="String">
+        select path
+        from video_diagnose_file
+        where video_diagnose_id=#{videoDiagnoseId}
+    </select>
 </mapper>

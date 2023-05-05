@@ -5,24 +5,27 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import com.example.hospital.api.db.Entity.VideoDiagnoseEntity;
-import com.example.hospital.api.db.dao.DoctorDao;
-import com.example.hospital.api.db.dao.MisUserDao;
-import com.example.hospital.api.db.dao.UserDao;
-import com.example.hospital.api.db.dao.VideoDiagnoseDao;
+import com.example.hospital.api.db.dao.*;
 import com.example.hospital.api.exception.HospitalException;
 import com.example.hospital.api.service.VideoDiagnoseService;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.ws.rs.PUT;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -41,6 +44,9 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
 
     @Resource
     private VideoDiagnoseDao videoDiagnoseDao;
+
+    @Resource
+    private VideoDiagnoseFileDao videoDiagnoseFileDao;
 
     @Override
     public void online(int userId){
@@ -75,8 +81,7 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
     public int searchDoctorId(int userId){
         HashMap map=misUserDao.searchRefId(userId);
         String job= MapUtil.getStr(map,"job");
-//        if(!"医生".equals(job)){
-        if("医生".equals(job)){
+        if(!"医生".equals(job)){
             throw new HospitalException("当前用户是医生");
         }
         Integer refId=MapUtil.getInt(map,"refId");
@@ -101,10 +106,10 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
             add("nextOrder");
         }});
         String currentOrder=list.get(0);
-        String nextOrder=list.get(1);
+        String nextOrder=String.valueOf(list.get(1));
 
         //存在当前问诊或者排队问诊，医生就不能下线
-        if(!"none".equals(currentOrder)||!"none".equals(nextOrder)){
+         if(!"none".equals(currentOrder)||!"none".equals(nextOrder)){
             return false;
         }
         //删除医生的问诊缓存
@@ -143,7 +148,7 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
                 continue;
             }
             //过滤掉不是规定诊室的医生
-            if(job!=null && job.equals(tempJob)){
+            if(job!=null && !job.equals(tempJob)){
                 continue;
             }
             HashMap map=new HashMap(){{
@@ -162,15 +167,14 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
     }
 
     @Override
-    @Transactional
     public HashMap createVideoDiagnose(int userId, VideoDiagnoseEntity entity) {
         HashMap result = new HashMap();
-        HashMap map = userDao.searchUserInfo(userId);
-        String date=MapUtil.getStr(map,"date");
+        HashMap map = userDao.searchByUserId(userId);
+//        String date=MapUtil.getStr(map,"date");
         String openId = MapUtil.getStr(map, "openId");
         int patientCardId = MapUtil.getInt(map, "patientCardId");
         entity.setPatientCardId(patientCardId);
-        String key = "online_dotor_" + entity.getDoctorId();
+        String key = "online_doctor_" + entity.getDoctorId();
         //从缓存中获取该医生的挂号金额
         String price = redisTemplate.opsForHash().get(key, "price").toString();
         int amount = new BigDecimal(price).multiply(new BigDecimal(100)).intValue();
@@ -221,15 +225,14 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
         String expectEnd = null;
         //如果没有当前问诊患者，定义计时开始和结束时间
         if ("none".equals(currentPatient)) {
-            expectStart = now.offsetNew(DateField.MINUTE, 1).toString("yyyy-MM-dd HH:mm:ss");
-            expectEnd = now.offsetNew(DateField.MINUTE, 16).toString("yyyy-MM-dd HH:mm:ss");
-
+            expectStart = now.offsetNew(DateField.MINUTE, 3).toString("yyyy-MM-dd HH:mm:ss");
+            expectEnd = now.offsetNew(DateField.MINUTE, 8).toString("yyyy-MM-dd HH:mm:ss");
         }
         //如果有当前问诊患者，就以当前问诊结束时间预估开始和结束时间
         else {
             DateTime currentEnd = new DateTime(MapUtil.getStr(entries, "currentEnd"));
-            expectStart = currentEnd.offsetNew(DateField.MINUTE, 1).toString("yyyy-MM-dd HH:mm:ss");
-            expectEnd = currentEnd.offsetNew(DateField.MINUTE, 16).toString("yyyy-MM-dd HH:mm:ss");
+            expectStart = currentEnd.offsetNew(DateField.MINUTE, 3).toString("yyyy-MM-dd HH:mm:ss");
+            expectEnd = currentEnd.offsetNew(DateField.MINUTE, 8).toString("yyyy-MM-dd HH:mm:ss");
         }
         entity.setExpectStart(expectStart);
         entity.setExpectEnd(expectEnd);
@@ -258,8 +261,8 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
         //微信支付的相关信息
         result.put("outTradeNo",outTradeNo);
         result.put("prepayId",prepayId);
-        result.put("timeStamp",date);
-        result.put("amount",amount);
+//        result.put("timeStamp",date);
+        result.put("amount",price);
         result.put("videoDiagnoseId",id);
         result.put("expectStart",expectStart);
         result.put("expectEnd",expectEnd);
@@ -271,4 +274,209 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
         redisTemplate.expireAt(paymentKey,now.offset(DateField.SECOND,90));
         return result;
     }
+    @Override
+    public HashMap searchVideoDiagnoseInfo(int userId){
+        HashMap map=new HashMap();
+        int docotrId=this.searchDoctorId(userId);
+        String key="online_doctor_"+docotrId;
+        if(!redisTemplate.hasKey(key)){
+            return map;
+        }
+        Map entries=redisTemplate.opsForHash().entries(key);
+        String currentOrder=MapUtil.getStr(entries,"currentOrder");
+        String nextOrder=MapUtil.getStr(entries,"nextOrder");
+        Boolean currentPayment=MapUtil.getBool(entries,"currentPayment");
+        Boolean nextPayment=MapUtil.getBool(entries,"nextPayment");
+//        if(!"none".equals(currentOrder) && (currentPayment!=null && currentPayment)){
+        if(!"none".equals(currentOrder)){
+            int diagnoseId=Integer.parseInt(currentOrder);
+            Map currentInfo=videoDiagnoseDao.searchVideoDiagnoseInfo(diagnoseId);
+            map.put("currentInfo",currentInfo);
+        }
+//        if(!"none".equals(nextOrder) && (nextPayment!=null && nextPayment)){
+        if(!"none".equals(nextOrder)){
+            int diagnoseId=Integer.parseInt(nextOrder);
+            Map nextInfo=videoDiagnoseDao.searchVideoDiagnoseInfo(diagnoseId);
+            map.put("nextInfo",nextInfo);
+//            map.put("nextPayment",nextPayment);
+        }
+        return map;
+    }
+
+    @Override
+    public HashMap refreshInfo(int userId) {
+        int doctorId=this.searchDoctorId(userId);
+        String key="online_doctor_"+doctorId;
+//        把医生上线缓存的部分属性数据取出来，保存到这个Map中返回给浏览器
+        HashMap map=new HashMap();
+
+//        不存在医生上线缓存的情况
+        if(!redisTemplate.hasKey(key)){
+            map.put("status","offline");
+            return map;
+        }
+        Map entries=redisTemplate.opsForHash().entries(key);
+        map.put("status","online");
+        map.put("open",MapUtil.getBool(entries,"open"));
+        map.put("currentOrder",MapUtil.getStr(entries,"currentOrder"));
+        Integer currentStatus=MapUtil.getInt(entries,"currentStatus");
+        map.put("currentStatus",currentStatus);
+        //如果患者已经付款会有程序往上线缓存中添加以及视频问诊RoomId
+        if(currentStatus!=null&& currentStatus==2){
+            map.put("roomId",MapUtil.getStr(entries,"roomId"));
+        }
+        map.put("currentStart",MapUtil.getStr(entries,"currentStart"));
+        map.put("currentEnd",MapUtil.getStr(entries,"currentEnd"));
+        return map;
+    }
+
+    @Override
+    @Transactional
+    public boolean updatePayment(Map param){
+        String outTradeNo=MapUtil.getStr(param,"outTradeNo");
+        //根据流水号查询挂号信息
+        HashMap data=videoDiagnoseDao.searchByOutTradeNo(outTradeNo);
+        int id=MapUtil.getInt(data,"id");
+        int doctorId=MapUtil.getInt(data,"doctorId");
+        String key="online_doctor_"+doctorId;
+        //获取医生上线缓存
+        Map entries=redisTemplate.opsForHash().entries(key);
+        //获取当前问诊挂号单ID
+        String currentOrder=MapUtil.getStr(entries,"currentOrder");
+        String nextOrder=MapUtil.getStr(entries,"nextOrder");
+        //如果挂号单是当前问诊的，就更新上线缓存
+        if(currentOrder.equals(id+"")){
+            redisTemplate.opsForHash().put(key,"currentPayment",true);
+            redisTemplate.opsForHash().put(key,"currentNotify",false);
+
+        }
+        //如果挂号单是排队问诊的，就更新上线缓存
+        else if(nextOrder.equals(id+"")){
+           redisTemplate.opsForHash().put(key,"nextPayment",true);
+           redisTemplate.opsForHash().put(key,"nextNotify",false);
+        }
+        //如果挂号单既不属于当前问诊页不属于排队问诊，就执行退款
+        else{
+            log.error("没有找到缓存，无法跟进付款缓存");
+        }
+//        更新数据库中的付款状态
+        videoDiagnoseDao.updatePayment(param);
+        int paymentStatus=MapUtil.getInt(param,"paymentStatus");
+        if(paymentStatus==2){
+            redisTemplate.expire("patient_video_diagnose_payment#"+id,5, TimeUnit.SECONDS);
+        }
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean searchPaymentResult(String outTradeNo){
+        String transactionId = videoDiagnoseDao.searchPaymentResult(outTradeNo);
+        if(transactionId !=null){
+            //更新挂号单为已付款，并且记录transactionId
+            this.updatePayment(new HashMap(){{
+                put("outTradeNo",outTradeNo);
+                put("transactionId",transactionId);
+                put("paymentStatus",2);
+            }});
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    //存放的是minio服务器的地址
+    @Value("${minio.endpoint}")
+    private String endpoint;
+
+    //minio的账户和密码
+    @Value("${minio.access-key}")
+    private String accessKey;
+
+    @Value("${minio.secret-key}")
+    private String secretKey;
+
+    @Override
+    //事务的注解
+    @Transactional
+    public String uploadImg(MultipartFile file, Integer videoDiagnoseId){
+        HashMap map = new HashMap();
+        try{
+            //随机生成文件名
+            String filename=IdUtil.simpleUUID()+".jpg";
+            String path="patient-wx/video_diagnose/"+filename;
+            //在Minio中保存医生照片
+            //创建连接
+            MinioClient client=new MinioClient.Builder()
+                    .endpoint(endpoint).credentials(accessKey,secretKey).build();
+            client.putObject(PutObjectArgs.builder().bucket("hospital")
+                    .object(path)
+                    .stream(file.getInputStream(),-1,5*1024*1024)
+                    //上传文件的类型
+                    .contentType("image/jpeg").build());
+            map.put("videoDiagnoseId",videoDiagnoseId);
+            map.put("filename",filename);
+            map.put("path",path);
+            videoDiagnoseFileDao.uploadImg(map);
+            return filename;
+        }catch(Exception e) {
+            log.error("保存就诊材料失败", e);
+            throw new HospitalException("保存就诊材料失败");
+        }
+    }
+
+    @Override
+    public ArrayList<HashMap> searchImageByVideoDiagnoseId(int videoDiagnoseId){
+        ArrayList<HashMap> list=videoDiagnoseFileDao.searchImageByVideoDiagnoseId(videoDiagnoseId);
+        return list;
+    }
+
+    @Override
+    public void deleteImage(Map param){
+        int videoDiagnoseId=MapUtil.getInt(param,"videoDiagnoseId");
+        //判断是否包含filename参数
+        String filename=MapUtil.getStr(param,"filename");
+        //删除某张照片
+        if(filename!=null){
+            this.removeImageFile(filename);
+        }
+        //删除该视频问诊所有照片
+        else{
+            //查询该视频所有照片
+            ArrayList<String> list = videoDiagnoseFileDao.searchfilenameByVideoDiagnoseId(videoDiagnoseId);
+            list.forEach(one->{
+                this.removeImageFile(one);
+            });
+        }
+        //删除数据表记录
+        videoDiagnoseFileDao.delete(param);
+    }
+
+    private void removeImageFile(String filename){
+        try{
+            String path="patient-wx/video_diagnose/"+filename;
+            //删除minio文件
+            MinioClient client=new MinioClient.Builder()
+                    .endpoint(endpoint).credentials(accessKey,secretKey).build();
+            client.removeObject(RemoveObjectArgs.builder().bucket("hospital").object(path).build());
+        }catch (Exception e){
+            log.error("删除视频问诊图片失败",e);
+            throw new HospitalException("删除视频问诊图片失败");
+        }
+    }
+
+    @Override
+    public String searchRoomId(int doctorId){
+        String key="online_doctor_"+doctorId;
+        Map entries=redisTemplate.opsForHash().entries(key);
+        String roomId=MapUtil.getStr(entries,"roomId");
+        return roomId;
+    }
+
+    @Override
+    public ArrayList<String> searchImgByVideoDiagnoseId(int videoDiagnoseId){
+        ArrayList<String> list=videoDiagnoseFileDao.searchImgByVideoDiagnoseId(videoDiagnoseId);
+        return list;
+    }
+
 }

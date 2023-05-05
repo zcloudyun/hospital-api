@@ -17,6 +17,7 @@ public interface MisUserDao {
     public int insertUser(MisUserEntity entity);
     public void updateUser(Map param);
     public void deleteUser(Integer[] ids);
+    public Integer searchUserId(Map param);
 }
 
 

@@ -18,4 +18,10 @@
         from patient_user u join patient_user_info_card c on c.user_id=u.id
         where u.id=#{userId}
     </select>
+    <select id="searchByUserId" parameterType="Integer" resultType="HashMap">
+        select u.create_time as date,p.id as patientCardId
+        from patient_user as u
+        join patient_user_info_card as p on u.id=p.user_id
+        where u.id=#{userId}
+    </select>
 </mapper>

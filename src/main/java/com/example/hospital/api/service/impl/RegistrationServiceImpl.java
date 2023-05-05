@@ -274,7 +274,6 @@ public class RegistrationServiceImpl implements RegistrationService {
         HashMap map=medicalRegistrationDao.searchRegistrationById(param);
         return map;
     }
-
     @Override
     public ArrayList<HashMap> searchByUserId(Map param){
         ArrayList<HashMap> list=medicalRegistrationDao.searchByUserId(param);

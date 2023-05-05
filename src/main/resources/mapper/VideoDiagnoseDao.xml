@@ -6,11 +6,11 @@
 <!--    保存挂号记录-->
     <insert id="insert" parameterType="com.example.hospital.api.db.Entity.VideoDiagnoseEntity">
         insert into video_diagnose(patient_card_id,doctor_id,out_trade_no,
-                                   amount,payment_status,prepay_id,transation_id,expect_start,
+                                   amount,payment_status,prepay_id,transaction_id,expect_start,
                                    expect_end,real_start,real_end,status,create_time)
         values (#{patientCardId},#{doctorId},#{outTradeNo},
-                #{amount},1,#{prepayId},NULL,STR_TO_DATE('${expectStart}','YYYY-MM-DD'),
-                STR_TO_DATE('${expectEnd}','YYYY-MM-DD'),NULL,NULL,1,NOW())
+                #{amount},1,#{prepayId},NULL,#{expectStart},
+                #{expectEnd},NULL,NULL,1,NOW())
     </insert>
 <!--    根据流水号查询主键-->
     <select id="searchByOutTradeNo" parameterType="String" resultType="HashMap">
@@ -18,4 +18,47 @@
         from video_diagnose
         where out_trade_no=#{outTradeNo}
     </select>
+<!--    根据挂号单ID，查询付款结果-->
+    <select id="searchPaymentStatus" parameterType="int" resultType="HashMap">
+        select doctor_id as doctorId,payment_status as paymentStatus
+        from video_diagnose
+        where id=#{id}
+    </select>
+<!--    关闭挂号单-->
+    <update id="closePayment" parameterType="Map">
+        update video_diagnose set payment_status=3
+        where payment_status=1
+        <if test="id!=null">
+            and id=#{id}
+        </if>
+        <if test="timer!=null">
+           and (NOW()-create_time) &gt;=0.00695
+        </if>
+    </update>
+    <select id="searchVideoDiagnoseInfo" parameterType="int" resultType="Map">
+        select vd.id as diagnoseId,pc.name as name,pc.tel as tel,
+               vd.expect_start as expectStart,
+               vd.expect_end as expectEnd,vd.status as status
+        from video_diagnose as vd
+                 join patient_user_info_card pc on vd.patient_card_id=pc.id
+                 join patient_user pu on pc.user_id=pu.id
+        where vd.id=#{diagnoseId}
+    </select>
+    <update id="updatePayment" parameterType="Map">
+        update video_diagnose set transaction_id=#{transactionId},payment_status=#{paymentStatus}
+        where out_trade_no=#{outTradeNo}
+    </update>
+    <select id="searchPaymentResult" parameterType="String" resultType="String">
+        select transaction_id from video_diagnose where out_trade_no =#{outTardeNo}
+    </select>
+    <update id="updateStatus" parameterType="HashMap">
+        update video_diagnose set status=#{status}
+        where id=#{id}
+        <if test="realStart!=null">
+          and  real_start=#{realStart}
+        </if>
+        <if test="realEnd!=null">
+          and real_end=#{realEnd}
+        </if>
+    </update>
 </mapper>

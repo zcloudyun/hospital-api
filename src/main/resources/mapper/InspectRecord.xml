@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.InspectRecordDao">
+    <insert id="insert" parameterType="com.example.hospital.api.db.Entity.InspectRecordEntity">
+        insert into inspect_record(hit_id,patient_card_id,hir_date,status,doctor_id,remark,price,create_time)
+        values (#{hitId},#{patientCardId},#{date},1,#{doctorId},#{remark},#{price},NOW())
+    </insert>
+    <select id="searchByStatus" parameterType="map" resultType="HashMap">
+        select ir.id,ir.hit_id,ir.patient_card_id,ir.hir_date as date,p.name as patientName,d.name as doctorName,
+               ir.doctor_id,ir.remark,it.name as hitName,ir.status,p.sex,p.birthday,p.tel
+        from inspect_items as it
+        join inspect_record as ir on ir.hit_id=it.id
+        join doctor as d on d.id=ir.doctor_id
+        join patient_user_info_card as p on p.id=ir.patient_card_id
+        where 1=1
+        <if test="status !=0">and ir.status=#{status}</if>
+    </select>
+    <update id="updateStatus" parameterType="int">
+        update inspect_record set status=2
+        where id=#{recordId}
+    </update>
+    <select id="searchInspectRecordByStatus" parameterType="Map" resultType="HashMap">
+        select ire.remark,ire.checkinfo,it.name,i.id
+        from inspect_record as i
+        join inspect_result as ire on ire.hit_record_id=i.id
+        join inspect_items as it on it.id=i.hit_id
+        where i.patient_card_id=#{patientCardId}
+    </select>
+    <select id="searchRecordAll" parameterType="int" resultType="HashMap">
+        select ir.id,ir.hir_date as date,it.name as hitName,
+                p.name as patientName
+        from inspect_record as ir
+        join inspect_items as it on it.id=ir.hit_id
+        join patient_user_info_card as p on ir.patient_card_id=p.id
+        where p.user_id=#{userId}
+    </select>
+    <select id="searchbyRecordId" parameterType="int" resultType="HashMap">
+        select ire.remark,ire.checkinfo,it.name,i.hir_date as date
+        from inspect_record as i
+        join inspect_result as ire on ire.hit_record_id=i.id
+        join inspect_items as it on it.id=i.hit_id
+        where i.id=#{recordId}
+    </select>
+</mapper>

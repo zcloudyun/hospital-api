@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.HealthResultDao">
+   <select id="searchByType" parameterType="Map" resultType="HashMap">
+      select suggest,result,scope,id
+      from health_result
+      where total_score=#{totalScore} and health_id=#{health_id}
+   </select>
+   <select id="searchRecommed" parameterType="int" resultType="HashMap">
+      select dept_name,hospital
+      from health_recommed
+      where result_id=#{result_id}
+   </select>
+   <select id="searchScale" parameterType="int" resultType="HashMap">
+      select scale
+      from health_scale
+      where health_id=#{health_id}
+   </select>
+
+</mapper>

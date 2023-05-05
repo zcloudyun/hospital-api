@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.InspectResultFileDao">
+    <insert id="uploadImg" parameterType="HashMap">
+        insert into inspect_result_file(record_id,filename,path,create_time)
+        values(#{recordId},#{filename},#{path},NOW())
+    </insert>
+    <select id="searchImageByRecordId" parameterType="int" resultType="HashMap">
+        select filename,path
+        from inspect_result_file
+        where record_id=#{recordId}
+    </select>
+    <delete id="delete" parameterType="Map">
+        delete from inspect_result_file
+        where record_id=#{recordId}
+        <if test="filename!=null">
+            and filename=#{filename}
+        </if>
+    </delete>
+    <select id="searchfilenameByRecordId" parameterType="int" resultType="String">
+        select filename
+        from inspect_result_file
+        where record_id=#{recordId}
+    </select>
+</mapper>

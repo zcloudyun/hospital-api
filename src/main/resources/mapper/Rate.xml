@@ -23,7 +23,7 @@
         where id=#{rateId}
     </update>
     <select id="searchByRateId" parameterType="Integer" resultType="HashMap">
-        select evaluate_text as evaluateText,score1,score2,score3,score4,score5,
+        select evaluate_text as evaluateText,score1,score2,score3,score4,score5,registrationId,
                score6,score7,score8,score9,score10,create_time as createTime
         from rate
         where id=#{rateId}

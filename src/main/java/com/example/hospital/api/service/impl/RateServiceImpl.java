@@ -7,6 +7,7 @@ import com.example.hospital.api.control.form.InsertRateForm;
 import com.example.hospital.api.db.Entity.RateEntity;
 import com.example.hospital.api.db.dao.MedicalRegistrationDao;
 import com.example.hospital.api.db.dao.RateDao;
+import com.example.hospital.api.db.dao.RateFileDao;
 import com.example.hospital.api.exception.HospitalException;
 import com.example.hospital.api.service.RateService;
 import io.minio.MinioClient;
@@ -25,6 +26,9 @@ public class RateServiceImpl implements RateService {
     private RateDao rateDao;
 
     @Resource
+    private RateFileDao rateFileDao;
+
+    @Resource
     private MedicalRegistrationDao medicalRegistrationDao;
     @Override
     //事务的注解
@@ -39,12 +43,20 @@ public class RateServiceImpl implements RateService {
     @Override
     public ArrayList<HashMap> searchByUserIdAll(Integer userId){
         ArrayList<HashMap>list=rateDao.searchByUserIdAll(userId);
+        list.forEach(item->{
+            Integer registrationId = MapUtil.getInt(item, "registrationId");
+            ArrayList<HashMap> list1 = rateFileDao.searchImageByRegistrationId(registrationId);
+            item.put("file",list1);
+        });
         return list;
     }
 
     @Override
     public HashMap searchByRateId(Integer rateId){
         HashMap map=rateDao.searchByRateId(rateId);
+        Integer registrationId = MapUtil.getInt(map, "registrationId");
+        ArrayList<HashMap> list = rateFileDao.searchImageByRegistrationId(registrationId);
+        map.put("file",list);
         return map;
     }
     @Override

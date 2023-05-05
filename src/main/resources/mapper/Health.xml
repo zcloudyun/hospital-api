@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.HealthDao">
+   <select id="searchAll" resultType="HashMap">
+      select h.describe,h.image,h.minute,h.name,h.number_of_people,count(*) as question,h.id as health_id
+      from health as h
+      join health_question as q on h.id=q.health_id
+      group by q.health_id
+   </select>
+   <update id="updateByHealthId" parameterType="int">
+      update health set number_of_people=number_of_people+1
+      where id=#{health_id}
+   </update>
+</mapper>

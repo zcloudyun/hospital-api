@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.HealthQuestionDao">
+  <select id="searchByType" parameterType="int" resultType="HashMap">
+      select id,topic
+      from health_question
+      where health_id=#{type}
+  </select>
+    <select id="searchOption" resultType="HashMap" parameterType="int">
+        select `option` as title,score
+        from health_answer
+        where question_id=#{questionId}
+    </select>
+</mapper>
