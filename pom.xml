@@ -186,6 +186,11 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.78</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.1</version>
+        </dependency>
 <!--        微信公众号-->
         <dependency>
             <groupId>com.github.binarywang</groupId>

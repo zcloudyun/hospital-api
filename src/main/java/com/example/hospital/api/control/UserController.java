@@ -28,13 +28,20 @@ public class UserController {
         Integer id=MapUtil.getInt(map,"id");
         StpUtil.login(id);
         String token=StpUtil.getTokenValue();
-        return R.ok(msg).put("token",token);
+        return R.ok(msg).put("token",token).put("userId",id);
     }
 
     @GetMapping("/searchUserInfo")
     @SaCheckLogin
     public R searchUserInfo(){
         int userId=StpUtil.getLoginIdAsInt();
+        HashMap map=userService.searchUserInfo(userId);
+        return R.ok().put("result",map);
+    }
+
+    @PostMapping("/searchUserMessage")
+    @SaCheckLogin
+    public R searchUserMessage(@RequestParam("userId") Integer userId){
         HashMap map=userService.searchUserInfo(userId);
         return R.ok().put("result",map);
     }

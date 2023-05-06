@@ -9,6 +9,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -27,6 +28,6 @@ public class HospitalApiApplication {
     }
   @PostConstruct
     public void init(){
-      initializeWork.init();
+      // initializeWork.init();
   }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hospital.api.db.dao.MessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.hospital.api.db.Entity.Message">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="senderId" column="sender_id" jdbcType="INTEGER"/>
+            <result property="receiverId" column="receiver_id" jdbcType="INTEGER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,sender_id,receiver_id,
+        content,create_time,update_time
+    </sql>
+
+    <select id="searchDoctorList" resultType="HashMap" parameterType="integer">
+        select m.receiver_id as doctorId,m.content,m.create_time
+        from tb_message as m
+        where m.sender_id=#{userId}
+    </select>
+    <select id="searchDoctorMessage" resultType="java.util.HashMap"></select>
+
+
+</mapper>

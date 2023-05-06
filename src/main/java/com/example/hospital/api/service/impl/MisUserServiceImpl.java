@@ -107,4 +107,9 @@ public class MisUserServiceImpl implements MisUserService {
     public void deleteUser(Integer[] ids){
         misUserDao.deleteUser(ids);
     }
+
+    @Override
+    public MisUserEntity getUserEntityById(Integer userId) {
+        return this.misUserDao.selectDoctorUserById(userId);
+    }
 }

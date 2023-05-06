@@ -22,4 +22,6 @@ public interface DoctorService extends IService<DoctorEntity> {
 
     //查询医生信息
     public HashMap searchDoctorInfoById(int id);
+
+    DoctorEntity getDoctorById(Integer refId);
 }

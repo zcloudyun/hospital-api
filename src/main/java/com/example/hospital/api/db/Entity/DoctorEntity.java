@@ -29,5 +29,6 @@ public class DoctorEntity {
     private Boolean recommended;
     private Byte status;
     private String createTime;
+    private Integer doctorId;
 
 }

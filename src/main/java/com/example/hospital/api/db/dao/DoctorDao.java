@@ -3,6 +3,8 @@ package com.example.hospital.api.db.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.hospital.api.db.Entity.DoctorEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -27,6 +29,10 @@ public interface DoctorDao extends BaseMapper<DoctorEntity> {
 
    public HashMap searchDoctorInfoById(int id);
    public HashMap searchOpenId(int userId);
+
+   @Select("select * from doctor where id = #{id} limit 1")
+   public DoctorEntity selectById(@Param("id") Integer id);
+
 }
 
 

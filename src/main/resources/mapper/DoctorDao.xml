@@ -120,6 +120,7 @@
     </select>
     <select id="searchDataForOnlineCache" parameterType="int" resultType="HashMap">
       select d.id as doctorId,
+             mu.id as userId,
              d.uuid as uuid,
              d.name as name,
              d.photo as photo,
@@ -134,6 +135,7 @@
       from doctor d
       join medical_dept_sub_and_doctor sd on sd.doctor_id=d.id
       join medical_dept_sub ds on sd.dept_sub_id=ds.id
+      join mis_user mu on d.id=mu.ref_id
       join medical_dept md on md.id=ds.dept_id
       join doctor_price dp on dp.doctor_id=d.id
       where d.id=${doctorId}

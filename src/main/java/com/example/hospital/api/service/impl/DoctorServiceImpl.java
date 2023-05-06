@@ -151,4 +151,10 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorDao, DoctorEntity> impl
         HashMap map=doctorDao.searchDoctorInfoById(id);
         return map;
     }
+
+    @Override
+    public DoctorEntity getDoctorById(Integer refId) {
+
+        return this.doctorDao.selectById(refId);
+    }
 }

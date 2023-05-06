@@ -29,7 +29,7 @@ public class VideoDiagnoseJob extends QuartzJobBean {
 
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) {
         //获取所有医生上线缓存
         Set<String> keys=redisTemplate.keys("online_doctor_*");
         //遍历每个上线缓存

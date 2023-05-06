@@ -44,7 +44,7 @@ public class MisUserController {
             //获取用户拥有的权限
             List<String> permissions=StpUtil.getPermissionList();
             //链式调用的方式将三个数据返回给前端
-            return R.ok().put("result",true).put("token",token).put("permission",permissions);
+            return R.ok().put("result",true).put("token",token).put("permission",permissions).put("doctorId",userId);
         }
         return R.ok().put("result",false);
     }
