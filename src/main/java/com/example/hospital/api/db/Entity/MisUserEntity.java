@@ -14,6 +14,7 @@ public class MisUserEntity {
     private Integer deptId;
     private String job;
     private Integer refId;
+    private int roleId;
     private Byte status;
     private String createTime;
 }

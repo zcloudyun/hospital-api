@@ -191,11 +191,20 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.13.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
 <!--        微信公众号-->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-mp</artifactId>
             <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -206,6 +215,11 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
+        </dependency>
+        <dependency>
+            <groupId>kim.wind</groupId>
+            <artifactId>sms-aggregation-spring-boot-starter</artifactId>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>

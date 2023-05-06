@@ -42,4 +42,12 @@ public class InsertUserForm {
     @Range(min=1,max=3,message = "status不能为空")
     private Byte status;
 
+    @NotNull(message = "refId不能为空")
+    @Min(value = 1,message = "refId不能小于1")
+    private Integer refId;
+
+    @NotNull(message = "roleId不能为空")
+    @Min(value = 1,message = "roleId不能小于1")
+    private Integer roleId;
+
 }

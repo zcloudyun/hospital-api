@@ -8,6 +8,7 @@ package com.example.hospital.api.socket;
 import com.alibaba.fastjson.JSON;
 import com.example.hospital.api.db.Entity.Message;
 import com.example.hospital.api.service.MessageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -25,6 +26,8 @@ import java.util.Objects;
 @Component
 public class HttpAuthHandler extends TextWebSocketHandler {
 
+    @Resource
+    private ObjectMapper objectMapper;
     @Resource
     private MessageService messageService;
 
@@ -64,7 +67,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         this.messageService.save(message);
 
         // 推送消息:
-        TextMessage pushMessage = new TextMessage(JSON.toJSONString(message));
+        TextMessage pushMessage = new TextMessage(objectMapper.writeValueAsString(message));
         // 首先推送给自己
         session.sendMessage(pushMessage);
 

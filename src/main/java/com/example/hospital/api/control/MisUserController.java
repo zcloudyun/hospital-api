@@ -42,7 +42,7 @@ public class MisUserController {
             String token=StpUtil.getTokenValue();
             System.out.println(token);
             //获取用户拥有的权限
-            List<String> permissions=StpUtil.getPermissionList();
+            List<String> permissions=misUserService.searchUserPermissions(userId);
             //链式调用的方式将三个数据返回给前端
             return R.ok().put("result",true).put("token",token).put("permission",permissions).put("doctorId",userId);
         }
@@ -89,4 +89,15 @@ public class MisUserController {
         misUserService.deleteUser(form.getIds());
         return R.ok();
     }
+
+    @PostMapping("/updatePassword")
+    public R updatePassword(@RequestBody @Valid UpdatePasswordForm form){
+        Integer userId = StpUtil.getLoginIdAsInt();
+        form.setUserId(userId);
+        Map param=BeanUtil.beanToMap(form);
+        String result = misUserService.updatePassword(param);
+        return R.ok().put("result",result);
+
+    }
+
 }

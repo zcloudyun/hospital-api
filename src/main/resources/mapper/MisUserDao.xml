@@ -8,10 +8,9 @@
     </select>
     <select id="searchUserPermissions" parameterType="int" resultType="String">
         select p.permission_code as permission
-        from db_hospital.mis_user u
-                 join mis_user_role ur on u.id = ur.user_id
-                 join mis_role_permission rp on rp.role_id = ur.role_id
-                 join mis_permission p on rp.permission_id = p.id
+        from mis_user u
+        join mis_role_permission as rp on rp.role_id=u.role_id
+        join mis_permission as p on p.id=rp.permission_id
         where u.id = ${userId}
     </select>
     <select id="searchRefId" parameterType="int" resultType="HashMap">
@@ -27,9 +26,13 @@
                u.email as email,
                u.job as job,
                u.status as status,
-               md.name as deptName
+               md.name as deptName,
+               r.role_name as role,
+               r.id as roleId,
+               u.ref_id as refId
         from mis_user as u
         join medical_dept as md on u.dept_id=md.id
+        join mis_role as r on r.id=u.role_id
         where 1=1
         <if test="name !=null">and u.name like '%${name}%'</if>
         <if test="deptId !=null">and md.id=${deptId}</if>
@@ -49,14 +52,14 @@
     </select>
     <insert id="insertUser" parameterType="com.example.hospital.api.db.Entity.MisUserEntity">
         insert into mis_user(username,password,name,sex,tel,
-                             email,dept_id,job,status,create_time)
+                             email,dept_id,job,status,create_time,ref_id,role_id)
         values (#{username},#{password},#{name},#{sex},#{tel},#{email},#{deptId},
-                #{job},#{status},NOW())
+                #{job},#{status},NOW(),#{refId},#{roleId})
     </insert>
     <update id="updateUser" parameterType="Map">
         update mis_user set username=#{username},password=#{password},name=#{name},
                             sex=#{sex},tel=#{tel},email=#{email},
-                            dept_id=#{deptId},job=#{job},status=#{status}
+                            dept_id=#{deptId},job=#{job},status=#{status},ref_id=#{refId},role_id=#{roleId}
         where id=#{id}
     </update>
     <update id="deleteUser">
@@ -70,4 +73,13 @@
         select id from mis_user
         where ref_id=#{refId} and job=#{job}
     </select>
+    <select id="searchMessage" parameterType="Integer" resultType="HashMap">
+        select username,password
+        from mis_user
+        where id=#{userId}
+    </select>
+    <update id="updatePassword" parameterType="Map">
+      update mis_user set password=#{password}
+      where id=#{userId}
+    </update>
 </mapper>

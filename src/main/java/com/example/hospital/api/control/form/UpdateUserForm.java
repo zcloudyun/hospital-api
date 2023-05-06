@@ -35,7 +35,7 @@ public class UpdateUserForm {
     private String email;
 
     @NotBlank(message = "job不能为空")
-    @Pattern(regexp = "^主治医师$|^副主治医师$|^主任医师$|^副主任医师$",message = "job内容不正确")
+//    @Pattern(regexp = "^主治医师$|^副主治医师$|^主任医师$|^副主任医师$",message = "job内容不正确")
     private String job;
 
     @NotNull(message = "deptId不能为空")
@@ -45,4 +45,12 @@ public class UpdateUserForm {
     @NotNull(message = "status不能为空")
     @Range(min=1,max=3,message = "status不能为空")
     private Byte status;
+
+    @NotNull(message = "refId不能为空")
+    @Min(value = 1,message = "refId不能小于1")
+    private Integer refId;
+
+    @NotNull(message = "roleId不能为空")
+    @Min(value = 1,message = "roleId不能小于1")
+    private Integer roleId;
 }

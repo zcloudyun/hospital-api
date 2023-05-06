@@ -20,10 +20,10 @@ public interface MisUserDao {
     public void updateUser(Map param);
     public void deleteUser(Integer[] ids);
     public Integer searchUserId(Map param);
-
     @Select("select * from mis_user where id = #{userId} limit 1")
     public MisUserEntity selectDoctorUserById(@Param("userId") Integer doctorId);
-
+    public void updatePassword(Map param);
+    public HashMap searchMessage(Integer userId);
 }
 
 

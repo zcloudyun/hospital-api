@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.hospital.api.db.Entity.MedicalDeptSubAndDoctorEntity;
 import com.example.hospital.api.db.dao.MedicalDeptSubAndDoctorDao;
 import com.example.hospital.api.service.MedicalDeptSubAndDoctorService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,6 +18,9 @@ public class MedicalDeptSubAndDoctorServiceImpl extends ServiceImpl<MedicalDeptS
     @Override
     public List<MedicalDeptSubAndDoctorEntity> getSubDeptDoctorListBatchIds(List<Integer> subIdList) {
 
+        if (CollectionUtils.isEmpty(subIdList)) {
+            return Collections.emptyList();
+        }
         List<MedicalDeptSubAndDoctorEntity> doctorList = this.lambdaQuery()
                 .in(MedicalDeptSubAndDoctorEntity::getDeptSubId, subIdList)
                 .list();

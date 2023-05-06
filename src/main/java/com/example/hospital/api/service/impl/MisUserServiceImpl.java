@@ -46,6 +46,11 @@ public class MisUserServiceImpl implements MisUserService {
 
     }
 
+     @Override
+     public ArrayList<String> searchUserPermissions(Integer userId){
+         ArrayList<String> list = misUserDao.searchUserPermissions(userId);
+         return list;
+     }
     @Override
     public PageUtils searchUserByPages(Map param){
         ArrayList<HashMap> list=null;
@@ -101,7 +106,34 @@ public class MisUserServiceImpl implements MisUserService {
         param.replace("password",password);
         misUserDao.updateUser(param);
     }
+    public String updatePassword(Map param){
+        Integer userId = MapUtil.getInt(param, "userId");
+        HashMap map = misUserDao.searchMessage(userId);
+        String username=MapUtil.getStr(map,"username");
+        String password=MapUtil.getStr(map,"password");
+        //从Map里面获取字符串
+        String password1=MapUtil.getStr(param,"password");
+        String newPassword=MapUtil.getStr(param,"newPassword");
+        MD5 md5=MD5.create();
+        //进行哈希加密
+        String temp=md5.digestHex(username);
+        //前6位字符
+        String tempStart= StrUtil.subWithLength(temp,0,6);
+        //后三位字符
+        String tempEnd=StrUtil.subSuf(temp,temp.length()-3);
+        //混淆原始密码并哈希加密
+        password1=md5.digestHex(tempStart+password1+tempEnd);
+        newPassword=md5.digestHex(tempStart+newPassword+tempEnd);
+        if(password.equals(password1)){
+            param.replace("password",newPassword);
+            misUserDao.updatePassword(param);
+            return "密码修改成功";
+        }
+        else{
+            return "原密码不正确";
+        }
 
+    }
     @Override
     @Transactional
     public void deleteUser(Integer[] ids){
