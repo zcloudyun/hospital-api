@@ -58,8 +58,8 @@ public class MedicalDeptSubWorkPlanSerivceImpl implements MedicalDeptSubWorkPlan
                     put("deptSubId",deptSubId);
                     put("deptSubName",deptSubName);
                     //该诊室出诊计划
-                    put("plan",new LinkedHashMap<>(){{
-                        put(date,new ArrayList<>(){{
+                    put("plan",new LinkedHashMap(){{
+                        put(date,new ArrayList(){{
                             add(doctorName);
                         }});
                     }});
@@ -85,7 +85,7 @@ public class MedicalDeptSubWorkPlanSerivceImpl implements MedicalDeptSubWorkPlan
                 //从诊室中取出出诊计划
                 LinkedHashMap plan=(LinkedHashMap) map.get("plan");
                 //创建新的出诊日期列表，添加该医生的名字
-                plan.put(date,new ArrayList<>(){{
+                plan.put(date,new ArrayList(){{
                     add(doctorName);
                 }});
             }
@@ -99,9 +99,9 @@ public class MedicalDeptSubWorkPlanSerivceImpl implements MedicalDeptSubWorkPlan
                     put("deptSubId",deptSubId);
                     put("deptSubName",deptSubName);
                     //出诊计划
-                    put("plan",new LinkedHashMap<>(){{
+                    put("plan",new LinkedHashMap(){{
                         //添加出诊列表
-                        put(date,new ArrayList<>(){{
+                        put(date,new ArrayList(){{
                             add(doctorName);
                         }});
                     }});
@@ -150,7 +150,7 @@ public class MedicalDeptSubWorkPlanSerivceImpl implements MedicalDeptSubWorkPlan
             ArrayList temp=new ArrayList();
             //把出诊计划保存到列表中
             tempSet.forEach(entry -> {
-                temp.add(new HashMap<>(){{
+                temp.add(new HashMap(){{
                     put("date",entry.getKey());
                     put("doctors",entry.getValue());
                 }});

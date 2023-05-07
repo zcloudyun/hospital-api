@@ -1,6 +1,5 @@
 package com.example.hospital.api;
 
-import com.example.hospital.api.async.InitializeWork;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,8 +7,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -21,13 +18,13 @@ import javax.annotation.Resource;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class HospitalApiApplication {
 //调用异步线程任务类
-  @Resource
-  private InitializeWork initializeWork;
+
   public static void main(String[] args) {
         SpringApplication.run(HospitalApiApplication.class, args);
     }
   @PostConstruct
     public void init(){
-      // initializeWork.init();
+
+
   }
 }

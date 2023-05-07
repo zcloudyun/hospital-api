@@ -2,9 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hospital.api.db.dao.UserDao">
     <insert id="insert" parameterType="com.example.hospital.api.db.Entity.UserEntity">
-        insert into patient_user(uuid,nickname,sex,status,create_time)
-        values (#{uuid},#{nickname},#{sex},#{status},NOW())
+        insert into patient_user(uuid,nickname,sex,password,status,create_time)
+        values (#{code},#{nickname},#{sex},#{password},#{status},NOW())
     </insert>
+    <select id="searchUsername" resultType="String">
+        select nickname
+        from patient_user
+    </select>
+    <select id="searchUserMessage" parameterType="String" resultType="HashMap">
+        select password,id
+        from patient_user
+        where nickname=#{nickname}
+    </select>
+
+    <update id="updatePassword" parameterType="Map">
+        update patient_user set password=#{newPassword}
+        where nickname=#{nickname}
+    </update>
     <select id="searchAlreadyRegistered" parameterType="String" resultType="Integer">
         select id from patient_user where uuid=#{code}
         LIMIT 1

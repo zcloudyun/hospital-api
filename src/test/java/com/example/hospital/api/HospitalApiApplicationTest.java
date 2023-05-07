@@ -17,14 +17,14 @@ public class HospitalApiApplicationTest {
 
     @Test
     void contextLoads(){
-        ArrayList rp=new ArrayList<>(){{
-            add(new HashMap<>(){{
+        ArrayList rp=new ArrayList(){{
+            add(new HashMap(){{
                 put("name","甲硝唑片");
                 put("spec","200mg*24片");
                 put("method","1片/次；每日三次；口服");
                 put("num",1);
             }});
-            add(new HashMap<>(){{
+            add(new HashMap(){{
                 put("name","头孢拉定胶囊");
                 put("spec","250mg*24片");
                 put("method","1片/次；每日两次；口服");

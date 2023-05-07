@@ -101,7 +101,7 @@ public class VideoDiagnoseServiceImpl implements VideoDiagnoseService {
             return true;
         }
         //检查是否正在执行的问诊和等待的问诊
-        List<String> list=redisTemplate.opsForHash().multiGet(key,new ArrayList<>(){{
+        List<String> list=redisTemplate.opsForHash().multiGet(key,new ArrayList(){{
             add("currentOrder");
             add("nextOrder");
         }});
