@@ -11,11 +11,14 @@
     </insert>
     <select id="searchByUserIdAll" resultType="HashMap" parameterType="Integer">
         select r.id,r.total_value as totalValue,r.evaluate_text as evaluateText,
-               r.registrationId,r.likes,r.create_time as createTime,u.nickname
+               r.registrationId,r.likes,r.create_time as createTime,u.nickname,mr.date,mr.slot,
+               d.name as doctorName,mds.name as deptSubName
         from rate as r
         join medical_registration as mr on mr.id=r.registrationId
         join patient_user_info_card as p on p.id=mr.patient_card_id
         join patient_user as u on u.id=p.user_id
+        join doctor as d on mr.doctor_id=d.id
+        join medical_dept_sub as mds on mds.id=mr.dept_sub_id
         where p.user_id=#{userId}
     </select>
     <update id="addLikes" parameterType="Integer">
@@ -23,9 +26,14 @@
         where id=#{rateId}
     </update>
     <select id="searchByRateId" parameterType="Integer" resultType="HashMap">
-        select evaluate_text as evaluateText,score1,score2,score3,score4,score5,registrationId,
-               score6,score7,score8,score9,score10,create_time as createTime
-        from rate
-        where id=#{rateId}
+        select r.evaluate_text as evaluateText,r.score1,r.score2,
+               r.score3,r.score4,r.score5,r.registrationId,
+               r.score6,r.score7,r.score8,r.score9,r.score10,r.create_time as createTime,
+               d.name as doctorName,mds.name as deptSubName,mr.date,mr.slot
+        from rate as r
+        join medical_registration as mr on mr.id=r.registrationId
+        join doctor as d on mr.doctor_id=d.id
+        join medical_dept_sub as mds on mds.id=mr.dept_sub_id
+        where r.id=#{rateId}
     </select>
 </mapper>

@@ -50,10 +50,6 @@ spring:
     port: 15672
     username: admin
     password: admin
-    #返回JSON的全局时间格式
-  jackson:
-    date-format: yyyy-MM-dd
-    time-zone: GMT+8
   application:
     name: hospital-api
 

@@ -8,6 +8,7 @@ import com.example.hospital.api.common.R;
 import com.example.hospital.api.control.form.InsertLoginForm;
 import com.example.hospital.api.control.form.InsertRegisterForm;
 import com.example.hospital.api.control.form.UpdateUserPasswordForm;
+import com.example.hospital.api.control.form.searchUserInfoForm;
 import com.example.hospital.api.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +44,10 @@ public class UserController {
         return R.ok().put("result",register);
     }
 
-    @GetMapping("/searchUserInfo")
+    @PostMapping("/searchUserInfo")
     @SaCheckLogin
-    public R searchUserInfo(){
-        int userId=StpUtil.getLoginIdAsInt();
-        HashMap map=userService.searchUserInfo(userId);
+    public R searchUserInfo(@RequestBody @Valid searchUserInfoForm from){
+        HashMap map=userService.searchUserInfo(from.getUserId());
         return R.ok().put("result",map);
     }
 
