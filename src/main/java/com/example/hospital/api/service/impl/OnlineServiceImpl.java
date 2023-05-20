@@ -101,5 +101,14 @@ public class OnlineServiceImpl implements OnlineService {
         }
         return list;
     }
+    @Override
+    public Boolean searchisOnline(int doctorId){
+        //查找缓存的医生
+        Set<String> keys=redisTemplate.keys("online_doctor_"+doctorId);
+        if(keys.size()>0){
+            return true;
+        }
+        return false;
+    }
 
 }

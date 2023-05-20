@@ -19,7 +19,7 @@ public interface RegistrationService {
     public boolean searchPaymentResult(String outTradeNo);
 
     public HashMap searchRegistrationInfo(Map param);
-    public ArrayList<HashMap> searchByStatus(Integer status);
+    public ArrayList<HashMap> searchByStatus(Map param);
     public HashMap searchRegistrationById(Map param);
 
     public ArrayList<HashMap> searchByUserId(Map param);

@@ -264,8 +264,11 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public ArrayList<HashMap> searchByStatus(Integer status){
-       ArrayList<HashMap> list= medicalRegistrationDao.searchByStatus(status);
+    public ArrayList<HashMap> searchByStatus(Map param){
+        int userId = MapUtil.getInt(param,"userId");
+        int doctorId=medicalRegistrationDao.searchDoctorId(userId);
+        param.put("doctorId",doctorId);
+        ArrayList<HashMap> list= medicalRegistrationDao.searchByStatus(param);
        return list;
     }
 

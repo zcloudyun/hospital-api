@@ -18,8 +18,8 @@ public interface MedicalRegistrationDao {
     public boolean updatePayment(Map param);
     public String searchPaymentResult(String outTradeNo);
     public HashMap searchRegistrationInfo(Map param);
-    public ArrayList<HashMap> searchByStatus(Integer status);
-
+    public ArrayList<HashMap> searchByStatus(Map param);
+    public int searchDoctorId(int userId);
     public void updateStatus(Integer id);
     public HashMap searchRegistrationById(Map param);
 

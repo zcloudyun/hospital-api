@@ -100,9 +100,10 @@ public class RegistrationController {
   @PostMapping ("/searchBystatus")
   @SaCheckLogin
   public R searchBystatus(@RequestBody @Valid SearchBystatusForm form){
+    int userId=StpUtil.getLoginIdAsInt();
     Map param= BeanUtil.beanToMap(form);
-    Integer status=MapUtil.getInt(param,"status");
-    ArrayList<HashMap> list=registrationService.searchByStatus(status);
+    param.replace("userId",userId);
+    ArrayList<HashMap> list=registrationService.searchByStatus(param);
     return R.ok().put("result",list);
   }
   //根据用户id和付款状态查看

@@ -4,7 +4,9 @@ package com.example.hospital.api.control;
 import cn.dev33.satoken.stp.StpUtil;
 import com.example.hospital.api.common.R;
 import com.example.hospital.api.db.Entity.DoctorEntity;
+import com.example.hospital.api.db.Entity.UserInfoCardEntity;
 import com.example.hospital.api.service.MessageService;
+import com.tencentcloudapi.mrs.v20200910.models.PatientInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,4 +38,11 @@ public class MessageController {
         return R.ok().put("talkList", doctorList);
     }
 
+
+    @GetMapping("/userList")
+    public R getUserList() {
+        Integer userId= StpUtil.getLoginIdAsInt();
+        List<UserInfoCardEntity> userList = this.messageService.searchUserList(userId);
+        return R.ok().put("talkList", userList);
+    }
 }

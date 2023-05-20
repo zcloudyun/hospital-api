@@ -8,7 +8,9 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
+import com.example.hospital.api.db.Entity.MisUserEntity;
 import com.example.hospital.api.db.Entity.UserEntity;
+import com.example.hospital.api.db.Entity.UserInfoCardEntity;
 import com.example.hospital.api.db.dao.UserDao;
 import com.example.hospital.api.db.dao.UserInfoCardDao;
 import com.example.hospital.api.service.UserService;
@@ -179,6 +181,10 @@ public class UserServiceImpl implements UserService {
         }else{
             return "用户名不存在";
         }
+    }
+    @Override
+    public UserInfoCardEntity getPatientById(int userId){
+       return userInfoCardDao.searchUserlist(userId);
     }
 }
 

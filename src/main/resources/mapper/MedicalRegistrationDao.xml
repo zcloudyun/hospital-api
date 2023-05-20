@@ -65,12 +65,19 @@
         join doctor_prescription dp on dp.registration_id=r.ide
         where r.id=#{id} and c.user_id=#{userId}
     </select>
-    <select id="searchByStatus" resultType="HashMap">
+    <select id="searchDoctorId" resultType="int" parameterType="int">
+        select d.id
+        from doctor as d
+        join mis_user as mu on mu.ref_id=d.id
+        where mu.id=#{userId}
+    </select>
+    <select id="searchByStatus" resultType="HashMap" parameterType="Map">
         select *
         from medical_registration m
         join patient_user_info_card p on m.patient_card_id=p.id
         where m.payment_status=2
         <if test="status !=0">and m.status=#{status}</if>
+        and m.doctor_id=#{doctorId}
     </select>
     <update id="updateStatus" parameterType="Integer">
       update medical_registration set status=2 where id=#{id}

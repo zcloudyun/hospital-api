@@ -26,8 +26,13 @@
         from doctor_work_plan p
         join doctor_work_plan_schedule s on s.work_plan_id=p.id
         join doctor d on p.doctor_id=d.id
-        where p.date=STR_TO_DATE('${date}','%Y-%m-%d')
-          and p.dept_sub_id=${deptSubId}
+        where 1=1
+        <if test="date !=null">
+            and p.date=STR_TO_DATE('${date}','%Y-%m-%d')
+        </if>
+        <if test="deptSubId !=null">
+           and p.dept_sub_id=${deptSubId}
+        </if>
         order by d.id,s.slot
     </select>
     <select id="searchByWorkPlanId" parameterType="int" resultType="HashMap">

@@ -113,9 +113,9 @@ tencent:
     expire: 86400
 
 minio:
-  endpoint: http://47.108.146.141:9000
-  access-key: admin
-  secret-key: minio@zy.com
+  endpoint:
+  access-key:
+  secret-key:
 
 
 # 短信
@@ -137,6 +137,3 @@ sms:
     templateName: code
     #请求地址 默认为dysmsapi.aliyuncs.com 如无特殊改变可以不用设置
     requestUrl: dysmsapi.aliyuncs.com
-
-
-

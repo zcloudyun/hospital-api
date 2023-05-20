@@ -18,7 +18,9 @@ public interface MessageMapper extends BaseMapper<Message> {
     @Select("select * from tb_message where sender_id = #{userId}")
     public List<Message> getUserAllMessage(@Param("userId")Integer userId);
 
-
+    //查询近三天的数据
+    @Select("select * from tb_message where receiver_id = ${userId} and create_time>date_sub(now(),interval 3 day)")
+    public List<Message> getDoctorAllMessage(@Param("userId")Integer userId);
 }
 
 

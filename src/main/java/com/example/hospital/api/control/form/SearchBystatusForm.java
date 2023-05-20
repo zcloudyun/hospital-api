@@ -10,4 +10,5 @@ public class SearchBystatusForm {
     @NotNull(message = "status不能为空")
     @Min(value=0,message = "status不能小于0")
     private Integer status;
+    public int userId;
 }

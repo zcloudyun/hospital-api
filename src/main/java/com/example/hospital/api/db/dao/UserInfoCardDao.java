@@ -2,6 +2,7 @@ package com.example.hospital.api.db.dao;
 
 import com.example.hospital.api.db.Entity.UserInfoCardEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,4 +22,8 @@ public interface UserInfoCardDao {
 
     public Integer searchIdByUserId(int userId);
     public ArrayList<HashMap> searchById(Integer id);
+
+    @Select("select * from patient_user_info_card where user_id = #{userId} limit 1")
+    public UserInfoCardEntity searchUserlist(int userId);
+
 }
