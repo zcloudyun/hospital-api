@@ -155,8 +155,7 @@ public class UserServiceImpl implements UserService {
         boolean result = list.contains(username);
         //如果存在用户名，根据用户名查询用户名对应的密码，并判断密码是否正确
         if(result) {
-            //获取用户输入的原密码
-            String password = MapUtil.getStr(param, "password");
+            //获取用户输入的新密码
             String newPassword = MapUtil.getStr(param, "newPassword");
             MD5 md5 = MD5.create();
             //进行哈希加密
@@ -165,19 +164,13 @@ public class UserServiceImpl implements UserService {
             String tempStart = StrUtil.subWithLength(temp, 0, 6);
             //后三位字符
             String tempEnd = StrUtil.subSuf(temp, temp.length() - 3);
-            //混淆原始密码并哈希加密
-            password = md5.digestHex(tempStart + password + tempEnd);
+            //混淆新密码并哈希加密
             newPassword = md5.digestHex(tempStart + newPassword + tempEnd);
-            //从数据库中查询原密码
-            HashMap map = userDao.searchUserMessage(username);
-            String password1=MapUtil.getStr(map,"password");
             //如果原密码正确，则修改密码
-            if (password1.equals(password)) {
-                param.replace("newPassword", newPassword);
-                userDao.updatePassword(param);
-                return "密码修改成功";
-            }
-            return "原密码错误";
+            param.replace("newPassword", newPassword);
+            userDao.updatePassword(param);
+            return "密码修改成功";
+
         }else{
             return "用户名不存在";
         }

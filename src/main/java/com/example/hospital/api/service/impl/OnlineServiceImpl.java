@@ -43,7 +43,7 @@ public class OnlineServiceImpl implements OnlineService {
         HashMap map=misUserDao.searchRefId(userId);
         String job= MapUtil.getStr(map,"job");
         if(!"医生".equals(job)){
-            throw new HospitalException("当前用户是医生");
+            throw new HospitalException("当前用户不是医生");
         }
         Integer refId=MapUtil.getInt(map,"refId");
         if(refId==null){
@@ -111,4 +111,39 @@ public class OnlineServiceImpl implements OnlineService {
         return false;
     }
 
+    @Override
+    public Boolean isStatus(int userId){
+        int doctorId=this.searchDoctorId(userId);
+        String key="online_doctor_"+doctorId;
+        //判断是否存在该医生的上线缓存
+        if(!redisTemplate.hasKey(key)){
+            return false;
+        }
+        //添加医生答疑状态
+        redisTemplate.opsForHash().put(key,"status",true);
+        return true;
+    }
+
+    @Override
+    public Boolean deitStatus(int userId){
+        int doctorId=this.searchDoctorId(userId);
+        String key="online_doctor_"+doctorId;
+        //判断是否存在该医生的上线缓存
+        if(!redisTemplate.hasKey(key)){
+            return false;
+        }
+        //修改答疑状态
+        redisTemplate.opsForHash().put(key,"status",false);
+        return true;
+    }
+
+    @Override
+    public Boolean searchStatus(int doctorId){
+        String key="online_doctor_"+doctorId;
+        //获取医生上线缓存
+        Map entries=redisTemplate.opsForHash().entries(key);
+        Boolean status=MapUtil.getBool(entries,"status");
+        return status;
+
+    }
 }

@@ -8,4 +8,7 @@ public interface OnlineService {
     public boolean offline(int userId);
     public ArrayList<HashMap> searchOnlineDoctorList(String subName, String job);
     public Boolean searchisOnline(int doctorId);
+    public Boolean isStatus(int userId);
+    public Boolean deitStatus(int userId);
+    public Boolean searchStatus(int userId);
 }

@@ -49,4 +49,26 @@ public class OnlineController {
         Boolean bool=onlineService.searchisOnline(form.getDoctorId());
         return R.ok().put("result",bool);
     }
+
+    @GetMapping("/isStatus")
+    @SaCheckLogin
+    public R isStatus(){
+        int userId= StpUtil.getLoginIdAsInt();
+        Boolean status = onlineService.isStatus(userId);
+        return R.ok().put("result",status);
+    }
+    @GetMapping("/deitStatus")
+    @SaCheckLogin
+    public R deitStatus(){
+        int userId= StpUtil.getLoginIdAsInt();
+        Boolean status = onlineService.deitStatus(userId);
+        return R.ok().put("result",status);
+    }
+
+    @PostMapping("/searchStatus")
+    @SaCheckLogin
+    public R searchStatus(@RequestBody @Valid SearchisOnlineForm form){
+        Boolean status=onlineService.searchStatus(form.getDoctorId());
+        return R.ok().put("result",status);
+    }
 }
