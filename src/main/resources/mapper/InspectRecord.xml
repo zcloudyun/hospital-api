@@ -12,10 +12,14 @@
                ir.doctor_id,ir.remark,it.name as hitName,ir.status,p.sex,p.birthday,p.tel
         from inspect_items as it
         join inspect_record as ir on ir.hit_id=it.id
-        join doctor as d on d.id=ir.doctor_id
+        join medical_dept_sub mds on it.dept_id = mds.dept_id
+        join medical_dept_sub_and_doctor mdsad on mdsad.dept_sub_id=mds.id
+        join doctor d on mdsad.doctor_id = d.id
+        join mis_user as mu on mu.ref_id=mdsad.doctor_id
         join patient_user_info_card as p on p.id=ir.patient_card_id
         where 1=1
         <if test="status !=0">and ir.status=#{status}</if>
+        and mu.id=#{userId}
     </select>
     <update id="updateStatus" parameterType="int">
         update inspect_record set status=2

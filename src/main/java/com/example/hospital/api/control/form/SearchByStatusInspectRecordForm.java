@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class SearchByStatusInspectRecordForm {
     private int status;
+    private int userId;
 }

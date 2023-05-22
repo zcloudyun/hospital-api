@@ -113,9 +113,9 @@ tencent:
     expire: 86400
 
 minio:
-  endpoint:
-  access-key:
-  secret-key:
+  endpoint: http://47.108.146.141:9000
+  access-key: admin
+  secret-key: minio@zy.com
 
 
 # 短信
