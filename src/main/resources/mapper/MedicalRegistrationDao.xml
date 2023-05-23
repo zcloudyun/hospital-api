@@ -100,8 +100,9 @@
              d.name as doctorName,mds.name as  deptSubName,mr.date,mr.slot,mr.amount as price,
              mr.payment_status as paymentStatus,mr.status,mr.work_plan_id as workPlanId,
              mr.doctor_schedule_id as scheduleId,mr.doctor_id as doctorId,mr.dept_sub_id as deptSubId,
-             mr.evaluate
+             mr.evaluate,m.id as recordId
       from medical_registration as mr
+      join medical_record as m on mr.id=m.registion_id
       join doctor as d on mr.doctor_id=d.id
       join patient_user_info_card as p on p.id=mr.patient_card_id
       join medical_dept_sub as mds on mds.id=mr.dept_sub_id
