@@ -45,6 +45,23 @@ public class InspectServiceImpl implements InspectService {
     }
 
     @Override
+    public PageUtils searchByRole(Map param){
+        ArrayList<HashMap> list=null;
+        //查询的记录总数
+        long count=inspectDao.inspectRoleCount(param);
+        if(count>0){
+            list=inspectDao.searchByRole(param);
+        }else{
+            list=new ArrayList<>();
+        }
+        //获取当前页数
+        int page= MapUtil.getInt(param,"page");
+        //获取每页记录数
+        int length=MapUtil.getInt(param,"length");
+        PageUtils pageUtils=new PageUtils(list,count,page,length);
+        return pageUtils;
+    }
+    @Override
     public int insert(Map param){
         InspectEntity entity= BeanUtil.toBean(param,InspectEntity.class);
         return inspectDao.insert(entity);

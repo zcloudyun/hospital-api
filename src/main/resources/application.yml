@@ -32,9 +32,7 @@ spring:
       #http请求不能超过20M
       max-request-size: 20MB
   redis:
-    database: 0
-    host: 47.108.146.141
-    port: 6379
+
     jedis:
       pool:
 #        连接池最大连接数

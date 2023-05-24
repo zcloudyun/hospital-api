@@ -7,6 +7,7 @@ import cn.hutool.core.map.MapUtil;
 import com.example.hospital.api.common.PageUtils;
 import com.example.hospital.api.common.R;
 import com.example.hospital.api.control.form.*;
+import com.example.hospital.api.db.Entity.PrescriptionEntity;
 import com.example.hospital.api.db.Entity.UserInfoCardEntity;
 import com.example.hospital.api.service.MedicalRecordService;
 import com.example.hospital.api.service.UserInfoCardService;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -88,6 +90,12 @@ public class MedicalRecordController {
     public R searchByRecordId(@RequestBody @Valid RequestRecordIdForm form){
         Integer recordId = form.getRecordId();
         HashMap map = medicalRecordService.searchByRecordId(recordId);
+        return R.ok().put("result",map);
+    }
+
+    @PostMapping("/searchMedicine")
+    public R searchMedicine(@RequestBody @Valid SearchMedicineForm form){
+        List<PrescriptionEntity> map = medicalRecordService.searchMedicine(form.getPatientId());
         return R.ok().put("result",map);
     }
 }

@@ -11,7 +11,9 @@ import javax.validation.constraints.Pattern;
 public class SearchInspectByPageForm {
     private String name;
     private Integer deptId;
+    private int userId;
     @NotNull(message = "status不能为空")
+
     @Range(min=1,max=3,message = "status内容不正确")
     private Integer status;
     @NotNull(message = "page不能为空")

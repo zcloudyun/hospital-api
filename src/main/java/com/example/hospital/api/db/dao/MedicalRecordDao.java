@@ -2,6 +2,7 @@ package com.example.hospital.api.db.dao;
 
 import com.example.hospital.api.db.Entity.MedicalRecordEntity;
 import com.example.hospital.api.db.Entity.PerscriptionEntity;
+import com.example.hospital.api.db.Entity.PrescriptionEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,4 +21,6 @@ public interface MedicalRecordDao {
     public ArrayList<HashMap>searchRpById(Integer[] ids);
     public ArrayList<HashMap> searchByUserIdRecord(Integer userId);
     public HashMap searchByRecordId(Integer recordId);
+    public List<PrescriptionEntity> searchMedicine(int patientId);
+    public long MedicineCount(int patientId);
 }

@@ -41,7 +41,7 @@ public class InspectRecordController {
     @PostMapping("/searchInspectRecordByStatus")
     public R searchInspectRecordByStatus(@RequestBody @Valid SearchInspectRecordByStatus form){
         Map param = BeanUtil.beanToMap(form);
-        HashMap map = inspectRecordService.searchInspectRecordByStatus(param);
+        ArrayList<HashMap> map = inspectRecordService.searchInspectRecordByStatus(param);
         return R.ok().put("result",map);
     }
 

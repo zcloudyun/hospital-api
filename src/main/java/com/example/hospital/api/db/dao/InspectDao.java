@@ -1,6 +1,7 @@
 package com.example.hospital.api.db.dao;
 
 import com.example.hospital.api.db.Entity.InspectEntity;
+import org.apache.hadoop.util.hash.Hash;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
@@ -15,4 +16,6 @@ public interface InspectDao {
    public int insert(InspectEntity entity);
    public void update(Map param);
    public void deleteByIds(Integer[] ids);
+   public long inspectRoleCount(Map param);
+   public ArrayList<HashMap> searchByRole(Map param);
 }

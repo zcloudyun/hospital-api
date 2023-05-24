@@ -12,7 +12,7 @@ public interface InspectRecordDao {
   public int insert(InspectRecordEntity entity);
   public ArrayList<HashMap> searchByStatus(Map param);
   public void updateStatus(int recordId);
-  public HashMap searchInspectRecordByStatus(Map param);
+  public ArrayList<HashMap> searchInspectRecordByStatus(Map param);
   public ArrayList<HashMap> searchRecordAll(int userId);
   public HashMap searchbyRecordId(int recordId);
 }

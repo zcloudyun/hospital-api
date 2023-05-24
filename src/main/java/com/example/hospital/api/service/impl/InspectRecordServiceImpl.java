@@ -33,11 +33,15 @@ public class InspectRecordServiceImpl implements InspectRecordService {
     }
 
     @Override
-    public HashMap searchInspectRecordByStatus(Map param){
-        HashMap map = inspectRecordDao.searchInspectRecordByStatus(param);
-        int recordId= MapUtil.getInt(map,"id");
-        ArrayList<HashMap> list = inspectResultFileDao.searchImageByRecordId(recordId);
-        map.put("file",list);
+    public ArrayList<HashMap> searchInspectRecordByStatus(Map param){
+        ArrayList<HashMap> map = inspectRecordDao.searchInspectRecordByStatus(param);
+        if(map.size()>0){
+            map.forEach(item->{
+                int recordId= MapUtil.getInt(item,"id");
+                ArrayList<HashMap> list = inspectResultFileDao.searchImageByRecordId(recordId);
+                item.put("file",list);
+            });
+        }
         return map;
     }
 

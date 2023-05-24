@@ -1,6 +1,7 @@
 package com.example.hospital.api.control;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
@@ -29,7 +30,9 @@ public class InspectController {
 
     @PostMapping("/searchByPage")
     public R searchByPage(@RequestBody @Valid SearchInspectByPageForm form){
+        int userId= StpUtil.getLoginIdAsInt();
         Map param = BeanUtil.beanToMap(form);
+        param.replace("userId",userId);
         int page = form.getPage();
         int length = form.getLength();
         //从当前页的第-开始
@@ -39,6 +42,19 @@ public class InspectController {
         return R.ok().put("result", pageUtils);
     }
 
+    @PostMapping("/searchByrole")
+    public R searchByRole(@RequestBody @Valid SearchInspectByPageForm form){
+        int userId= StpUtil.getLoginIdAsInt();
+        Map param = BeanUtil.beanToMap(form);
+        param.replace("userId",userId);
+        int page = form.getPage();
+        int length = form.getLength();
+        //从当前页的第-开始
+        int start = (page - 1) * length;
+        param.put("start", start);
+        PageUtils pageUtils = inspectService.searchByRole(param);
+        return R.ok().put("result", pageUtils);
+    }
     @PostMapping("/insert")
     @SaCheckLogin
 //    @SaCheckPermission(value={"ROOT","DOCTOR:INSERT"},mode=SaMode.OR)

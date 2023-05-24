@@ -43,4 +43,25 @@
             ${one}
         </foreach>
     </update>
+    <select id="searchByRole" parameterType="Map" resultType="HashMap">
+        select i.id,i.name,i.price,i.status,i.remark,md.name as deptName,i.dept_id
+        from  medical_dept as md
+        join inspect_items as i on i.dept_id=md.id
+        join mis_user as mu on mu.dept_id=md.id
+        where 1=1
+        and mu.id=#{userId}
+        <if test="name !=null">and i.name like '%${name}%'</if>
+        <if test="status!=null">and i.status=${status}</if>
+        limit ${length} offset #{start}
+    </select>
+    <select id="inspectRoleCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from  medical_dept as md
+        join inspect_items as i on i.dept_id=md.id
+        join mis_user as mu on mu.dept_id=md.id
+        where 1=1
+        and mu.id=#{userId}
+        <if test="name !=null">and i.name like '%${name}%'</if>
+        <if test="status!=null">and i.status=${status}</if>
+    </select>
 </mapper>

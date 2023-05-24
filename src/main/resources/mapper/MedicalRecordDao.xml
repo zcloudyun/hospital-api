@@ -123,4 +123,10 @@
         join medical_dept_sub as mds on mds.id=mr.dept_sub_id
         where m.id=#{recordId}
     </select>
+    <select id="MedicineCount" parameterType="int" resultType="long">
+        select count(*) from medical_record where patient_card_id=#{patientId}
+    </select>
+    <select id="searchMedicine" parameterType="int" resultType="com.example.hospital.api.db.Entity.PrescriptionEntity">
+        select prescription from medical_record where patient_card_id=#{patientId}
+    </select>
 </mapper>

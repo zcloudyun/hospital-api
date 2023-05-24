@@ -3,10 +3,7 @@ package com.example.hospital.api.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import com.example.hospital.api.common.PageUtils;
-import com.example.hospital.api.db.Entity.MedicalRecordEntity;
-import com.example.hospital.api.db.Entity.MedicineEntity;
-import com.example.hospital.api.db.Entity.PerscriptionEntity;
-import com.example.hospital.api.db.Entity.UserInfoCardEntity;
+import com.example.hospital.api.db.Entity.*;
 import com.example.hospital.api.db.dao.MedicalRecordDao;
 import com.example.hospital.api.db.dao.MedicalRegistrationDao;
 import com.example.hospital.api.db.dao.MedicineDao;
@@ -67,7 +64,26 @@ public class MedicalRecordImpl implements MedicalRecordService {
         PageUtils pageUtils=new PageUtils(list,count,page,length);
         return pageUtils;
     }
+    @Override
+    public List<PrescriptionEntity> searchMedicine(int patientId){
+        HashMap map=new HashMap();
+        List<PrescriptionEntity> list=null;
+        //查询该用户的处方总条数
+        long count=medicalRecordDao.MedicineCount(patientId);
+        if(count>0){
+            list=medicalRecordDao.searchMedicine(patientId);
+            for (PrescriptionEntity perscription : list) {
+                String[] split = perscription.getPrescription().split(",");
+                List<Integer> collect = Arrays.stream(split).map(Integer::valueOf).collect(Collectors.toList());
+                List<MedicineEntity> searchByIds = this.medicineDao.searchByIds(collect);
+                perscription.setMedicineEntityList(searchByIds);
 
+            }
+        }else{
+            list=new ArrayList<>();
+        }
+        return list;
+    }
     @Override
     public PageUtils searchPrescription(Map param){
         List<PerscriptionEntity> list=null;
