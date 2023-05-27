@@ -3,6 +3,7 @@ package com.example.hospital.api.control;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.*;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 @Slf4j
 @RestController
@@ -68,5 +70,13 @@ public class MedicalDeptSubWorkPlanController {
     public R deleteWorkPlan(@RequestBody @Valid DeleteWorkPlanForm form){
         medicalDeptSubWorkPlanService.deleteWorkPlan(form.getWorkPlanId());
         return R.ok();
+    }
+
+    @PostMapping("/searchDoctorMessage")
+    @SaCheckLogin
+    public R searchDoctorMessage(){
+        int userId=StpUtil.getLoginIdAsInt();
+        HashMap map = medicalDeptSubWorkPlanService.searchDoctorMessage(userId);
+        return R.ok().put("result",map);
     }
 }

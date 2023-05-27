@@ -32,7 +32,6 @@ spring:
       #http请求不能超过20M
       max-request-size: 20MB
   redis:
-
     jedis:
       pool:
 #        连接池最大连接数
@@ -43,6 +42,9 @@ spring:
         max-idle: 16
 #        最小空闲连接
         min-idle: 8
+    database: 0
+    host: 47.108.146.141
+    port: 6379
   rabbitmq:
     host: 47.108.146.141
     port: 15672
@@ -109,8 +111,6 @@ tencent:
     appId: 1400799601
     secretKey: 33703ed1aba792643f11846de7165924c38155ba923bbd99250b80df49918b81
     expire: 86400
-
-minio:
 
 
 

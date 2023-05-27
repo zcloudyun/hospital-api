@@ -8,6 +8,7 @@
                ds.id as deptSubId,
                ds.name as deptSubName,
                d.name as doctorName,
+               d.id as doctorId,
                wp.id as workPlanId,
                wp.date as date
         from doctor_work_plan wp
@@ -22,6 +23,13 @@
            and d.name like '%${doctorName}%'
         </if>
         order by ds.id,wp.date
+    </select>
+    <select id="searchDoctorMessage" parameterType="int" resultType="HashMap">
+        select d.id as doctorId,d.name as doctorName,mdsad.id as deptSubId
+        from doctor as d
+                 join medical_dept_sub_and_doctor as mdsad on mdsad.doctor_id=d.id
+                 join mis_user as mu on mu.ref_id=d.id
+        where mu.id=#{userId}
     </select>
     <select id="searchId" parameterType="Map" resultType="Integer">
         select id from doctor_work_plan

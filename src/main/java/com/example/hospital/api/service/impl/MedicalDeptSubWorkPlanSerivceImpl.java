@@ -46,6 +46,7 @@ public class MedicalDeptSubWorkPlanSerivceImpl implements MedicalDeptSubWorkPlan
             int deptSubId=MapUtil.getInt(one,"deptSubId");
             String deptSubName=MapUtil.getStr(one,"deptSubName");
             String doctorName=MapUtil.getStr(one,"doctorName");
+            int doctorId=MapUtil.getInt(one,"doctorId");
             int workPlanId=MapUtil.getInt(one,"workPlanId");
             String date=MapUtil.getStr(one,"date");
             //判断是不是第一条记录
@@ -198,5 +199,11 @@ public class MedicalDeptSubWorkPlanSerivceImpl implements MedicalDeptSubWorkPlan
         }
         doctorWorkPlanDao.deleteById(workPlanId);
         doctorWorkPlanScheduleService.deleteByWorkPlanId(workPlanId);
+    }
+
+    @Override
+    public HashMap searchDoctorMessage(int userId){
+        HashMap map = doctorWorkPlanDao.searchDoctorMessage(userId);
+        return map;
     }
 }
